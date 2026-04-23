@@ -508,7 +508,7 @@ function HeroShowcase() {
               </div>
             </div>
 
-            <div className="mt-2 max-w-sm rounded-[1.2rem] border border-white/10 bg-white/[0.08] p-3.5 backdrop-blur-md sm:mt-8 sm:rounded-[1.6rem] sm:p-6">
+            <div className="mt-14 max-w-sm rounded-[1.2rem] border border-white/10 bg-white/[0.08] p-3.5 backdrop-blur-md sm:mt-8 sm:rounded-[1.6rem] sm:p-6">
               <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f3cb7a]">
                 Premium Advisory
               </p>
