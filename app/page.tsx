@@ -9,6 +9,7 @@ import {
   HomeIcon,
   Landmark,
   MapPin,
+  MessageCircle,
   Phone,
   ShieldCheck,
   Store,
@@ -206,24 +207,15 @@ export default function Home() {
               Verified plots, luxury homes, and commercial spaces in Ranchi,
               guided with trust and clarity.
             </p>
-            <div className="mt-6 flex flex-col justify-center gap-3 sm:mt-8 sm:flex-row lg:justify-start">
-              <a
-                href="#enquiry"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#c79340] px-5 py-3.5 text-center text-xs font-black uppercase tracking-[0.16em] text-[#21170f] shadow-[0_20px_50px_rgba(199,147,64,0.35)] transition hover:-translate-y-1 hover:bg-[#d6a34f] sm:w-auto sm:px-7 sm:py-4 sm:text-sm"
-              >
-                Find My Property
-                <ArrowRight className="size-4" strokeWidth={2.5} />
-              </a>
-              <a
-                href="#services"
-                className="w-full rounded-full border border-[#9f7c49]/45 bg-white/45 px-5 py-3.5 text-center text-xs font-black uppercase tracking-[0.16em] text-[#284f45] transition hover:-translate-y-1 hover:bg-white sm:w-auto sm:px-7 sm:py-4 sm:text-sm"
-              >
-                Explore Services
-              </a>
+            <div className="mt-8 hidden sm:block">
+              <HeroCtas />
             </div>
           </div>
 
           <HeroShowcase />
+          <div className="sm:hidden">
+            <HeroCtas />
+          </div>
         </div>
       </section>
 
@@ -493,40 +485,40 @@ export default function Home() {
 
 function HeroShowcase() {
   return (
-    <div className="relative mx-auto w-full max-w-sm sm:max-w-xl">
+    <div className="relative mx-auto w-full max-w-[23rem] sm:max-w-xl">
       <div className="absolute -right-5 top-8 h-44 w-44 animate-pulse rounded-full bg-[#284f45]/20 blur-2xl" />
       <div className="absolute -bottom-6 -left-6 h-56 w-56 rounded-full bg-[#c79340]/25 blur-2xl" />
 
-      <div className="relative overflow-hidden rounded-[1.8rem] border border-white/70 bg-[#fffaf0]/75 p-3 shadow-[0_35px_100px_rgba(48,36,19,0.2)] backdrop-blur sm:rounded-[2.5rem] sm:p-4">
-        <div className="relative min-h-[360px] overflow-hidden rounded-[1.4rem] bg-[#1f2f29] p-5 text-white sm:min-h-[470px] sm:rounded-[2rem] sm:p-7">
+      <div className="relative overflow-hidden rounded-[1.6rem] border border-white/70 bg-[#fffaf0]/75 p-2.5 shadow-[0_35px_100px_rgba(48,36,19,0.2)] backdrop-blur sm:rounded-[2.5rem] sm:p-4">
+        <div className="relative min-h-[360px] overflow-hidden rounded-[1.25rem] bg-[#1f2f29] p-4 text-white sm:min-h-[470px] sm:rounded-[2rem] sm:p-7">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(243,203,122,0.28),transparent_28%),radial-gradient(circle_at_90%_5%,rgba(255,250,240,0.14),transparent_24%),linear-gradient(145deg,#162721_0%,#1f2f29_48%,#315d50_100%)]" />
           <div className="absolute -right-12 top-8 h-36 w-36 rounded-full border border-white/10 bg-white/5" />
           <div className="absolute left-8 top-8 h-20 w-20 rounded-[2rem] border border-[#f3cb7a]/20 bg-[#c79340]/20" />
 
           <div className="relative grid gap-3">
-            <div className="ml-auto flex w-40 animate-[float_5s_ease-in-out_infinite] items-center gap-3 rounded-2xl border border-white/10 bg-white/10 p-3 backdrop-blur sm:w-48">
-              <span className="grid size-10 place-items-center rounded-xl bg-[#f3cb7a] text-[#1f2f29]">
-                <BadgeIndianRupee className="size-5" strokeWidth={2.4} />
+            <div className="ml-auto flex w-32 animate-[float_5s_ease-in-out_infinite] items-center gap-2 rounded-2xl border border-white/10 bg-white/10 p-2 backdrop-blur sm:w-48 sm:gap-3 sm:p-3">
+              <span className="grid size-8 place-items-center rounded-xl bg-[#f3cb7a] text-[#1f2f29] sm:size-10">
+                <BadgeIndianRupee className="size-4 sm:size-5" strokeWidth={2.4} />
               </span>
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-[#f3cb7a]">
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#f3cb7a] sm:text-xs">
                   Smart
                 </p>
-                <p className="text-sm font-bold text-white">Investment</p>
+                <p className="text-xs font-bold text-white sm:text-sm">Investment</p>
               </div>
             </div>
 
-            <div className="mt-4 max-w-sm rounded-[1.6rem] border border-white/10 bg-white/[0.08] p-5 backdrop-blur-md sm:mt-8 sm:p-6">
+            <div className="mt-2 max-w-sm rounded-[1.2rem] border border-white/10 bg-white/[0.08] p-3.5 backdrop-blur-md sm:mt-8 sm:rounded-[1.6rem] sm:p-6">
               <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f3cb7a]">
                 Premium Advisory
               </p>
-              <h2 className="mt-2 max-w-lg font-serif text-2xl font-bold leading-tight tracking-[-0.03em] sm:text-3xl">
+              <h2 className="mt-1.5 max-w-lg font-serif text-lg font-bold leading-tight tracking-[-0.03em] sm:mt-2 sm:text-3xl">
                 Verified property. Clear guidance.
               </h2>
             </div>
           </div>
 
-          <div className="absolute inset-x-5 bottom-5 grid gap-3 sm:inset-x-7 sm:bottom-7 sm:grid-cols-3">
+          <div className="absolute inset-x-4 bottom-4 grid grid-cols-3 gap-2 sm:inset-x-7 sm:bottom-7 sm:gap-3">
             <PropertyMetric
               icon={MapPin}
               label="Plots"
@@ -552,6 +544,26 @@ function HeroShowcase() {
   );
 }
 
+function HeroCtas() {
+  return (
+    <div className="grid grid-cols-2 justify-center gap-2 sm:flex sm:flex-row sm:gap-3 lg:justify-start">
+      <a
+        href="#enquiry"
+        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-[#c79340] px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-[#21170f] shadow-[0_20px_50px_rgba(199,147,64,0.35)] transition hover:-translate-y-1 hover:bg-[#d6a34f] min-[390px]:text-xs sm:min-h-12 sm:w-auto sm:gap-2 sm:px-7 sm:py-4 sm:text-sm sm:tracking-[0.16em]"
+      >
+        Find Property
+        <ArrowRight className="size-3.5 sm:size-4" strokeWidth={2.5} />
+      </a>
+      <a
+        href="#services"
+        className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#9f7c49]/45 bg-white/45 px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-[#284f45] transition hover:-translate-y-1 hover:bg-white min-[390px]:text-xs sm:min-h-12 sm:w-auto sm:px-7 sm:py-4 sm:text-sm sm:tracking-[0.16em]"
+      >
+        Explore Services
+      </a>
+    </div>
+  );
+}
+
 function PropertyMetric({
   icon: Icon,
   label,
@@ -565,15 +577,15 @@ function PropertyMetric({
 }) {
   return (
     <div
-      className={`rounded-[1.2rem] border border-white/10 bg-white/[0.09] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.16)] backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/[0.13] sm:p-4 ${delay}`}
+      className={`rounded-[1rem] border border-white/10 bg-white/[0.09] p-2.5 shadow-[0_18px_45px_rgba(0,0,0,0.16)] backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/[0.13] sm:rounded-[1.2rem] sm:p-4 ${delay}`}
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="grid size-10 place-items-center rounded-xl bg-[#f3cb7a]/95 text-[#1f2f29]">
-          <Icon className="size-5" strokeWidth={2.4} />
+        <span className="grid size-8 place-items-center rounded-xl bg-[#f3cb7a]/95 text-[#1f2f29] sm:size-10">
+          <Icon className="size-4 sm:size-5" strokeWidth={2.4} />
         </span>
-        <p className="font-serif text-2xl font-bold text-[#f3cb7a]">{value}</p>
+        <p className="font-serif text-xl font-bold text-[#f3cb7a] sm:text-2xl">{value}</p>
       </div>
-      <p className="mt-3 text-[10px] font-black uppercase tracking-[0.16em] text-white/70">
+      <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-white/70 sm:mt-3 sm:text-[10px] sm:tracking-[0.16em]">
         {label}
       </p>
     </div>
@@ -739,6 +751,30 @@ function Footer() {
               </a>
             </div>
           </div>
+
+          <div className="sm:col-span-2 lg:col-span-3">
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f3cb7a]">
+              Connect
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a
+                href="#"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm font-bold text-white/72 transition hover:bg-white/12 hover:text-white"
+              >
+                <FacebookIcon />
+                Facebook
+              </a>
+              <a
+                href="https://wa.me/?text=Hello%20Sri%20Ram%20Property%20Consultancy%2C%20I%20want%20property%20guidance%20in%20Ranchi."
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm font-bold text-white/72 transition hover:bg-white/12 hover:text-white"
+              >
+                <MessageCircle className="size-4" strokeWidth={2.3} />
+                WhatsApp
+              </a>
+            </div>
+          </div>
         </div>
         <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs font-bold text-white/45 sm:mt-10 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
           <p>Sri Ram Property Consultancy. Real Estate Consultancy in Ranchi.</p>
@@ -778,6 +814,19 @@ function MobileBottomNav() {
         })}
       </div>
     </nav>
+  );
+}
+
+function FacebookIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="size-4"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path d="M14 8.4V6.8c0-.76.18-1.2 1.2-1.2H17V2.3C16.2 2.2 15.4 2 14.3 2c-2.7 0-4.5 1.6-4.5 4.6v1.8H7v3.7h2.8V22H14v-9.9h2.8l.4-3.7H14Z" />
+    </svg>
   );
 }
 
