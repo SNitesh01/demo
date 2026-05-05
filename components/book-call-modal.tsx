@@ -16,20 +16,20 @@ export function BookCallModal() {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="rounded-full border border-[#f3cb7a]/60 bg-[linear-gradient(135deg,#284f45_0%,#1f2f29_48%,#c79340_100%)] px-4 py-3 text-xs font-black text-[#fff7df] shadow-[0_16px_34px_rgba(40,79,69,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_20px_44px_rgba(199,147,64,0.28)] sm:px-5 sm:text-sm"
+          className="rounded-sm border border-[#f4d06f]/60 bg-[#1f4f4a] px-4 py-3 text-xs font-black text-[#fff7df] shadow-[0_16px_34px_rgba(31,79,74,0.2)] transition hover:-translate-y-0.5 hover:bg-[#173d39] sm:px-5 sm:text-sm"
         >
-          Book Call
+          RFQ Call
         </button>
       </DialogTrigger>
       <DialogContent>
-        <p className="pr-12 text-sm font-black uppercase tracking-[0.25em] text-[#f3cb7a]">
-          Book A Call
+        <p className="pr-12 text-sm font-black uppercase tracking-[0.25em] text-[#bd6f3e]">
+          Book An RFQ Call
         </p>
         <DialogHeader>
-          <DialogTitle>Share your need.</DialogTitle>
+          <DialogTitle>Share your fabric need.</DialogTitle>
           <DialogDescription>
-            Share your location, property type, and budget. We will guide you
-            with verified options.
+            Share your fabric type, quantity, finish, and timeline. We will
+            respond with relevant sourcing options.
           </DialogDescription>
         </DialogHeader>
         <EnquiryForm />

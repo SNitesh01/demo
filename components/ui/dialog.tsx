@@ -54,7 +54,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed left-1/2 top-1/2 z-[90] max-h-[88svh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[1.8rem] border border-white/10 bg-[#1f2f29] p-5 text-white shadow-[0_35px_120px_rgba(0,0,0,0.35)] outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-[2.2rem] sm:p-7",
+          "fixed left-1/2 top-1/2 z-[90] max-h-[88svh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-sm border border-[#d7d0c0] bg-[#fffdf7] p-5 text-[#17211e] shadow-[0_35px_120px_rgba(0,0,0,0.22)] outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:p-7",
           className,
         )}
         {...props}
@@ -63,7 +63,7 @@ function DialogContent({
         {showCloseButton ? (
           <DialogPrimitive.Close
             data-slot="dialog-close"
-            className="absolute right-4 top-4 grid size-10 place-items-center rounded-full border border-white/10 bg-white/10 text-white transition hover:bg-white/20 focus:outline-none"
+            className="absolute right-4 top-4 grid size-10 place-items-center rounded-sm border border-[#d7d0c0] bg-white text-[#17211e] transition hover:bg-[#f4d06f] focus:outline-none"
           >
             <X className="size-5" strokeWidth={2.4} />
             <span className="sr-only">Close</span>
@@ -107,7 +107,7 @@ function DialogDescription({
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
-      className={cn("max-w-xl text-sm leading-6 text-[#d9d0bd]", className)}
+      className={cn("max-w-xl text-sm leading-6 text-[#5b574f]", className)}
       {...props}
     />
   );

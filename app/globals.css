@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5efe2;
-  --foreground: #21170f;
+  --background: #f7f3ea;
+  --foreground: #1e2320;
   --font-sans-local: var(--font-poppins), sans-serif;
   --font-serif-local: var(--font-poppins), sans-serif;
 }
@@ -43,8 +43,8 @@ textarea {
 }
 
 ::selection {
-  background: #284f45;
-  color: #f9e5ae;
+  background: #1f4f4a;
+  color: #f4d06f;
 }
 
 @keyframes float {

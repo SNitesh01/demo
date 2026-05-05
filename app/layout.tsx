@@ -10,9 +10,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Sri Ram Property Consultancy | Verified Properties in Ranchi",
+  title: "Texora Supply | B2B Textile Sourcing Demo",
   description:
-    "Premium plots, luxury homes, and commercial property consultancy in Hinoo, Ranchi with transparent deals and expert Vastu guidance.",
+    "A textile B2B website demo for fabric sourcing, sampling, compliance, bulk coordination, and buyer enquiries.",
 };
 
 export default function RootLayout({

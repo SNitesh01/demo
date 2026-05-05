@@ -5,29 +5,29 @@ import { useState } from "react";
 
 const faqs = [
   {
-    question: "Do you deal in plots, flats, and commercial spaces?",
+    question: "Can this site work for a fabric mill or textile trader?",
     answer:
-      "Yes. We help clients with premium plots, luxury flats, homes, and commercial property options.",
+      "Yes. The demo is structured for mills, fabric traders, exporters, and B2B sourcing teams that need an informative website with enquiry capture.",
   },
   {
-    question: "Are properties verified before visits?",
+    question: "What content should the full website include?",
     answer:
-      "We focus on serious and verified options so clients spend time only on suitable properties.",
+      "The full website can include company profile, product range, sourcing capabilities, compliance details, buyer FAQs, and a contact or RFQ flow.",
   },
   {
-    question: "Do you provide Vastu guidance?",
+    question: "Can product categories be customized?",
     answer:
-      "Yes. We provide practical property and Vastu guidance before you make a decision.",
+      "Yes. Cotton, blends, knits, denim, home textiles, technical textiles, or garment services can be adjusted to match the business.",
   },
   {
-    question: "Can I share my budget first?",
+    question: "Does the form support buyer RFQs?",
     answer:
-      "Yes. Share your budget, location, and requirement. We will shortlist matching options.",
+      "The current form is a front-end demo. It can later be connected to email, WhatsApp, CRM, or a database-backed RFQ workflow.",
   },
   {
-    question: "Where is your office located?",
+    question: "Is compliance content important for textile B2B?",
     answer:
-      "Our office is in Hinoo, Ranchi. You can contact us first and then plan a visit.",
+      "Very important. Buyers often look for testing, certifications, audit readiness, packing standards, and sample-to-bulk quality controls before contacting a supplier.",
   },
 ];
 
@@ -40,16 +40,16 @@ export function FaqAccordion() {
         const isOpen = open === index;
 
         return (
-          <article key={faq.question} className="border-b border-[#dfceb1] py-4">
+          <article key={faq.question} className="border-b border-[#d7d0c0] py-4">
             <button
               type="button"
               onClick={() => setOpen(isOpen ? -1 : index)}
               className="flex w-full items-center justify-between gap-4 text-left"
             >
-              <span className="text-base font-bold text-[#1f2f29] sm:text-lg">
+              <span className="text-base font-bold text-[#17211e] sm:text-lg">
                 {faq.question}
               </span>
-              <span className="grid size-9 shrink-0 place-items-center rounded-full bg-[#284f45] text-[#f3cb7a]">
+              <span className="grid size-9 shrink-0 place-items-center rounded-sm bg-[#1f4f4a] text-[#f4d06f]">
                 <ChevronDown
                   className={`size-5 transition-transform ${
                     isOpen ? "rotate-180" : ""
@@ -66,7 +66,7 @@ export function FaqAccordion() {
               }`}
             >
               <div className="overflow-hidden">
-                <p className="max-w-2xl pt-3 text-sm leading-6 text-[#6b553b] sm:text-base sm:leading-7">
+                <p className="max-w-2xl pt-3 text-sm leading-6 text-[#5f584d] sm:text-base sm:leading-7">
                   {faq.answer}
                 </p>
               </div>
