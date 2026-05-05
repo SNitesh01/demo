@@ -1,5 +1,4 @@
 import { SwatchBook } from "lucide-react";
-
 const fabricCategories = [
   "Cotton Poplin",
   "Twill",
