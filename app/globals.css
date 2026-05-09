@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f5efe2;
-  --foreground: #21170f;
+  --background: #f7f0df;
+  --foreground: #17120c;
   --font-sans-local: var(--font-poppins), sans-serif;
   --font-serif-local: var(--font-poppins), sans-serif;
 }
@@ -26,6 +26,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 88px;
 }
 
 body {
@@ -43,8 +44,8 @@ textarea {
 }
 
 ::selection {
-  background: #284f45;
-  color: #f9e5ae;
+  background: #f6c45f;
+  color: #17120c;
 }
 
 @keyframes float {
@@ -77,5 +78,32 @@ textarea {
 
   to {
     transform: translateX(-50%);
+  }
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.scroll-reveal {
+  animation: reveal-up 0.8s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
   }
 }

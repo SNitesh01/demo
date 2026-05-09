@@ -1,542 +1,501 @@
+"use client";
+
 import {
   ArrowRight,
   BadgeIndianRupee,
-  Building2,
+  BookOpenCheck,
   BriefcaseBusiness,
+  ChartNoAxesColumnIncreasing,
   CheckCircle2,
-  Compass,
-  Factory,
-  HomeIcon,
-  Landmark,
-  MapPin,
+  CircleDollarSign,
+  Clapperboard,
+  Camera,
+  GraduationCap,
+  Handshake,
+  Lightbulb,
+  Link,
+  Menu,
   MessageCircle,
-  Phone,
-  ShieldCheck,
-  Store,
+  PenLine,
+  Play,
+  Send,
+  Sparkles,
+  Star,
+  Target,
+  TrendingUp,
+  Trophy,
   UsersRound,
+  X,
   type LucideIcon,
 } from "lucide-react";
+import { useState, type ReactNode } from "react";
 
-import { AreasMarquee } from "@/components/areas-marquee";
-import { BookCallModal } from "@/components/book-call-modal";
-import { EnquiryForm } from "@/components/enquiry-form";
-import { FaqAccordion } from "@/components/faq-accordion";
-import { TestimonialsSwiper } from "@/components/testimonials-swiper";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
-const services = [
-  {
-    title: "Premium Plots",
-    description:
-      "Verified plots for living and investment.",
-    detail: "Investment | Residential",
-    icon: MapPin,
-  },
-  {
-    title: "Luxury Flats & Homes",
-    description:
-      "Refined homes for comfort and value.",
-    detail: "Flats | Villas | Homes",
-    icon: HomeIcon,
-  },
-  {
-    title: "Commercial Spaces",
-    description:
-      "Business-ready spaces in strong locations.",
-    detail: "Office | Retail | Lease",
-    icon: Building2,
-  },
+const navLinks = [
+  { label: "Home", href: "#home" },
+  { label: "Benefits", href: "#benefits" },
+  { label: "Creators", href: "#creators" },
+  { label: "Training", href: "#training" },
+  { label: "Collaborations", href: "#collaborations" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Contact", href: "#contact" },
 ];
 
-const trustPoints = [
-  {
-    text: "Verified options",
-    icon: ShieldCheck,
-  },
-  {
-    text: "Clear deal support",
-    icon: CheckCircle2,
-  },
-  {
-    text: "Vastu guidance",
-    icon: Compass,
-  },
-  {
-    text: "Ranchi market insight",
-    icon: Landmark,
-  },
+const heroPillars = [
+  { title: "Learn", icon: GraduationCap, detail: "Skill training" },
+  { title: "Connect", icon: Handshake, detail: "Brand access" },
+  { title: "Grow", icon: TrendingUp, detail: "Content strategy" },
+  { title: "Earn", icon: CircleDollarSign, detail: "Paid campaigns" },
 ];
 
-const projects = [
+const benefits = [
   {
-    title: "Plot Corridors",
+    title: "Professional Training",
     description:
-      "Land options with growth potential.",
-    tag: "Plots",
-    icon: MapPin,
+      "Aapko professional training milegi jisse aap apni skills better banakar earning ke naye raste khol sakte hain.",
+    icon: GraduationCap,
   },
   {
-    title: "Home Shortlists",
+    title: "Content Creation",
     description:
-      "Premium homes filtered for lifestyle.",
-    tag: "Homes",
-    icon: HomeIcon,
+      "Aap seekhenge attractive, high-quality aur trending content banana jo aapki pehchan aur reach badhata hai.",
+    icon: Clapperboard,
   },
   {
-    title: "Commercial Spaces",
+    title: "Content Writing",
     description:
-      "Retail and office spaces with visibility.",
-    tag: "Commercial",
-    icon: Building2,
+      "Content writing training se aap strong copy, captions, scripts aur SEO-friendly content likhna seekhenge.",
+    icon: PenLine,
   },
-];
-
-const industries = [
   {
-    title: "Home Buyers",
-    description: "Secure homes in good locations.",
+    title: "Influencer Connect Commission",
+    description:
+      "Dusre influencers ko platform se jodkar aap achha commission hasil kar sakte hain.",
     icon: UsersRound,
   },
   {
-    title: "Investors",
-    description: "Assets with stronger growth logic.",
-    icon: BadgeIndianRupee,
-  },
-  {
-    title: "Retail Brands",
-    description: "Visible spaces for customer footfall.",
-    icon: Store,
-  },
-  {
-    title: "Offices",
-    description: "Practical workspaces in Ranchi.",
+    title: "Brand Connect Commission",
+    description:
+      "Brands ko connect karke aap commission kama sakte hain aur apna network strong bana sakte hain.",
     icon: BriefcaseBusiness,
   },
   {
-    title: "Developers",
-    description: "Market guidance for project owners.",
-    icon: Factory,
+    title: "Paid Collaboration Opportunities",
+    description:
+      "Aapko har mahine paid collaborations ke behtar mauke mil sakte hain, profile readiness ke saath.",
+    icon: BadgeIndianRupee,
   },
   {
-    title: "Remote Buyers",
-    description: "Verified options with clear updates.",
-    icon: Compass,
+    title: "Paid Collaboration Guidance",
+    description:
+      "Hum sikhayenge brands se contact, pitch, deal aur paid collaboration ko professionally kaise manage karna hai.",
+    icon: Target,
+  },
+  {
+    title: "Growth & Personal Development",
+    description:
+      "Aapke personal brand, confidence, communication aur digital presence ko high level tak le jane mein support milega.",
+    icon: Trophy,
   },
 ];
 
-const steps = [
-  "Share your requirement",
-  "Get handpicked options",
-  "Visit only serious matches",
-  "Close with clarity",
+const trainingItems = [
+  {
+    title: "Live Training Sessions",
+    description: "Weekly live sessions jahan experts practical knowledge aur direct guidance denge.",
+    icon: BookOpenCheck,
+  },
+  {
+    title: "Pre-recorded Courses",
+    description: "Detailed video training ko aap jab chahein, jitni baar chahein dekh sakte hain.",
+    icon: Clapperboard,
+  },
+  {
+    title: "Practical Assignments",
+    description: "Assignments ke through learning ke saath-saath real practice karwai jayegi.",
+    icon: PenLine,
+  },
+  {
+    title: "Personal Guidance & Support",
+    description: "Expert team ki taraf se personal guidance aur support milega.",
+    icon: Lightbulb,
+  },
+  {
+    title: "Regular Updates",
+    description: "Trends, market aur brand requirements ke hisab se regular updates milenge.",
+    icon: Sparkles,
+  },
 ];
 
-const heroStats = [
-  "Verified Listings",
-  "Guided Deal Closure",
-  "10+ Years Serving",
-  "Expert Vastu Advice",
+const collaborationSteps = [
+  "Profile Building",
+  "Brand Discovery",
+  "Pitching Guidance",
+  "Negotiation Support",
+  "Paid Collaboration",
+];
+
+const stats = [
+  { value: "4", label: "Growth pillars" },
+  { value: "8", label: "Creator benefits" },
+  { value: "5", label: "Training formats" },
+  { value: "100%", label: "Action focused" },
+];
+
+const audiences = [
+  {
+    title: "Influencers",
+    description:
+      "For creators who want better content planning, stronger brand presence, and collaboration confidence.",
+    icon: Star,
+  },
+  {
+    title: "New Creators",
+    description:
+      "For beginners who need training, direction, and a simple roadmap to start professionally.",
+    icon: Sparkles,
+  },
+  {
+    title: "Professionals",
+    description:
+      "For coaches, freelancers, consultants, and experts building a credible digital identity.",
+    icon: BriefcaseBusiness,
+  },
+];
+
+const joinReasons = [
+  "Apni pehchan banaiye",
+  "Skills seekhiye",
+  "Network badhaiye",
+  "Earning ke naye avsar paiye",
+  "100% support aur guidance",
+  "Regular updates aur personal direction",
+];
+
+const profileHighlights = [
+  "Professional profile building",
+  "Digital presence aur personal brand clarity",
+  "Content ideas, captions aur scripts",
+  "Email, pitch aur brand conversation training",
+  "Deal aur payment negotiation support",
+  "Confidence, communication aur consistency",
+];
+
+const testimonials = [
+  {
+    quote:
+      "Training se mujhe samajh aaya ki professional profile kaise banani hai aur brands se kaise baat karni hai.",
+    name: "Creator member",
+  },
+  {
+    quote:
+      "Content planning, pitching aur paid collaboration process ab kaafi clear lagta hai.",
+    name: "Influencer member",
+  },
+  {
+    quote:
+      "ANU Brand Connection ne guidance, support aur roadmap diya. Pehle confusion tha, ab clarity hai.",
+    name: "Professional member",
+  },
+];
+
+const ctaPoints = [
+  "Learn new skills",
+  "Build your identity",
+  "Create a strong network",
+  "Earn better income",
 ];
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#f5efe2] pb-24 text-[#21170f] md:pb-0">
-      <header className="fixed inset-x-0 top-0 z-50 w-full border-b border-[#d7c4a3]/70 bg-[#fffaf0]/90 shadow-[0_14px_45px_rgba(48,36,19,0.1)] backdrop-blur-xl">
-        <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8 lg:px-10 xl:px-0">
-          <div className="flex w-full items-center justify-between gap-4 md:w-auto">
-            <a href="#top" className="flex items-center gap-3">
-              <span className="grid size-11 place-items-center rounded-full bg-[#284f45] text-lg font-black text-[#f9e5ae]">
-                SR
-              </span>
-              <span>
-                <span className="block text-sm font-black uppercase tracking-[0.2em] text-[#284f45]">
-                  Sri Ram
-                </span>
-                <span className="block text-xs font-bold text-[#86663a]">
-                  Property Consultancy
-                </span>
-              </span>
-            </a>
-            <div className="md:hidden">
-              <BookCallModal />
-            </div>
-          </div>
+    <main className="min-h-screen overflow-x-hidden bg-[#f7f0df] text-[#17120c]">
+      <Header />
+      <section
+        id="home"
+        className="relative isolate px-4 pt-[76px] sm:px-6 lg:px-8 lg:pt-[88px]"
+      >
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,#070604_0%,#17120c_42%,#4b3517_100%)]" />
+        <div className="absolute inset-0 -z-10 opacity-45 bg-[radial-gradient(circle_at_18%_18%,rgba(245,199,95,0.48),transparent_26%),radial-gradient(circle_at_84%_24%,rgba(255,255,255,0.2),transparent_24%)]" />
 
-          <div className="hidden text-sm font-bold text-[#61482d] md:flex md:items-center md:gap-8">
-            <a
-              className="transition hover:text-[#284f45]"
-              href="#about"
-            >
-              About
-            </a>
-            <a
-              className="transition hover:text-[#284f45]"
-              href="#services"
-            >
-              Services
-            </a>
-            <a
-              className="transition hover:text-[#284f45]"
-              href="#projects"
-            >
-              Projects
-            </a>
-            <a
-              className="transition hover:text-[#284f45]"
-              href="#enquiry"
-            >
-              Contact Us
-            </a>
-            <BookCallModal />
-          </div>
-        </nav>
-      </header>
-
-      <section className="relative isolate px-4 sm:px-8 lg:px-10">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_16%_18%,rgba(199,147,64,0.32),transparent_28%),radial-gradient(circle_at_88%_6%,rgba(42,90,78,0.28),transparent_30%),linear-gradient(135deg,#fbf5ea_0%,#eadfc8_46%,#f7f0e2_100%)]" />
-        <div className="absolute left-1/2 top-0 -z-10 h-96 w-96 -translate-x-1/2 rounded-full bg-white/35 blur-3xl" />
-
-        <div
-          id="top"
-          className="mx-auto grid min-h-[calc(100svh-78px)] max-w-7xl items-center gap-8 py-14 pt-28 sm:gap-10 sm:py-24 sm:pt-36 lg:grid-cols-[1.02fr_0.98fr] lg:gap-12 lg:py-28 lg:pt-32"
-        >
-          <div className="mx-auto max-w-3xl text-center lg:mx-0 lg:text-left">
-            <h1 className="max-w-2xl font-serif text-4xl font-bold leading-tight tracking-[-0.035em] text-[#1f2f29] min-[390px]:text-5xl sm:text-6xl lg:text-7xl">
-              Build your property legacy.
+        <div className="mx-auto grid min-h-[calc(100svh-76px)] max-w-7xl items-center gap-8 py-8 sm:gap-10 sm:py-10 lg:min-h-[calc(100svh-88px)] lg:grid-cols-[1.02fr_0.98fr] lg:gap-16 lg:py-12">
+          <div className="scroll-reveal text-center text-white lg:text-left">
+            <h1 className="mx-auto max-w-3xl text-3xl font-extrabold leading-[1.08] tracking-[0.005em] min-[390px]:text-4xl sm:text-6xl lg:mx-0 lg:text-7xl">
+              Build Your Creator Brand.
             </h1>
-            <p className="mx-auto mt-5 max-w-lg text-base leading-7 text-[#604c36] sm:mt-6 sm:text-lg sm:leading-8 lg:mx-0">
-              Verified plots, luxury homes, and commercial spaces in Ranchi,
-              guided with trust and clarity.
+            <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#f8edd0]/82 sm:text-lg sm:leading-8 lg:mx-0">
+              Sahi margdarshan, behtar avsar aur growth ki guarantee ke saath
+              creators ko training, content support aur brand connections.
             </p>
-            <div className="mt-8 hidden sm:block">
-              <HeroCtas />
-            </div>
-          </div>
-
-          <HeroShowcase />
-          <div className="sm:hidden">
-            <HeroCtas />
-          </div>
-        </div>
-      </section>
-
-      <section id="about" className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:gap-12">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-              About Sri Ram
-            </p>
-            <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#1f2f29] sm:text-4xl lg:text-5xl">
-              Trusted property guidance.
-            </h2>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8">
-              Sri Ram Property Consultancy helps buyers, investors, and
-              business owners choose verified plots, homes, and commercial
-              spaces in Ranchi with clarity.
-            </p>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8">
-              With 10+ years of serving clients, we shortlist serious options
-              around your budget, location, and purpose, with transparent deal
-              support and practical Vastu guidance.
-            </p>
-          </div>
-
-          <div className="grid gap-3">
-            {heroStats.map((item) => (
-              <div
-                key={item}
-                className="flex items-center gap-4 rounded-2xl border border-[#dfceb1] bg-[#fffaf0]/75 p-4 shadow-[0_18px_55px_rgba(48,36,19,0.07)] backdrop-blur"
+            <div className="mt-6 hidden grid-cols-2 gap-3 sm:mt-7 sm:flex sm:justify-center lg:justify-start">
+              <GoldButton href="#contact">Join Now</GoldButton>
+              <a
+                href="#benefits"
+                className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-white backdrop-blur transition hover:-translate-y-1 hover:bg-white hover:text-[#17120c] sm:px-7 sm:text-sm"
               >
-                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#284f45] text-[#f3cb7a]">
-                  <CheckCircle2 className="size-5" strokeWidth={2.3} />
-                </span>
-                <p className="text-sm font-black uppercase tracking-[0.12em] text-[#284f45]">
-                  {item}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="services" className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-2xl">
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-              What We Deal In
-            </p>
-            <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#1f2f29] sm:text-4xl lg:text-5xl">
-              Property options that fit.
-            </h2>
-          </div>
-          <div className="mt-8 grid gap-4 lg:mt-10 lg:grid-cols-3 lg:gap-5">
-            {services.map((service, index) => (
-              <ServiceCard key={service.title} index={index} service={service} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto max-w-7xl rounded-[1.8rem] border border-[#dfceb1] bg-[#fffaf0]/70 p-5 shadow-[0_24px_80px_rgba(48,36,19,0.08)] backdrop-blur sm:rounded-[2.5rem] sm:p-8 lg:p-10 xl:p-12">
-          <div className="grid gap-5 sm:gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end lg:gap-12">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-                Industries We Serve
-              </p>
-              <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#1f2f29] sm:text-4xl lg:text-5xl">
-                Who we serve.
-              </h2>
+                Learn More
+              </a>
             </div>
-            <p className="max-w-2xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8 lg:justify-self-end">
-              Guidance for buyers, investors, and businesses.
-            </p>
           </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:mt-10 lg:grid-cols-3 lg:gap-5">
-            {industries.map((industry) => (
-              <IndustryCard key={industry.title} industry={industry} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="projects" className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-5 sm:gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-end lg:gap-12">
-            <div>
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-                Projects
-              </p>
-              <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#1f2f29] sm:text-4xl lg:text-5xl">
-                Curated project shortlists.
-              </h2>
-            </div>
-            <p className="max-w-2xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8 lg:justify-self-end">
-              Compare serious options before visiting.
-            </p>
-          </div>
-          <div className="mt-8 grid gap-4 lg:mt-10 lg:grid-cols-3 lg:gap-5">
-            {projects.map((project) => (
-              <FeatureCard key={project.title} item={project} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="why-us" className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto grid max-w-7xl gap-6 rounded-[1.8rem] bg-[#1f2f29] p-5 text-white shadow-[0_35px_100px_rgba(31,47,41,0.2)] sm:rounded-[2.5rem] sm:p-8 lg:grid-cols-[0.95fr_1.05fr] lg:gap-12 lg:p-10 xl:p-12">
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#f3cb7a]">
-              Why Choose Us
-            </p>
-            <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] sm:mt-4 sm:text-4xl lg:text-5xl">
-              Clarity before commitment.
-            </h2>
-            <p className="mt-4 leading-7 text-[#d8d1c4] sm:mt-6 sm:leading-8">
-              We focus on clarity before commitment. Every recommendation is
-              shaped around your purpose, preferred area, budget comfort, and
-              future value.
-            </p>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-            {trustPoints.map((point) => (
-              <div
-                key={point.text}
-                className="rounded-2xl border border-white/10 bg-white/[0.06] p-4 sm:rounded-3xl sm:p-5"
-              >
-                <point.icon
-                  className="mb-4 size-7 text-[#f3cb7a] sm:mb-5 sm:size-9"
-                  strokeWidth={2}
-                />
-                <p className="text-base font-black leading-7 sm:text-lg">{point.text}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-              Areas We Serve
-            </p>
-            <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8">
-              From Hinoo to key residential and commercial pockets, we help you
-              compare practical property options across Ranchi.
-            </p>
-          </div>
-        </div>
-        <AreasMarquee />
-      </section>
-
-      <section className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-3xl">
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-              Simple Process
-            </p>
-            <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#1f2f29] sm:text-4xl lg:text-5xl">
-              Simple buying process.
-            </h2>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8">
-              Share your name, preferred location, requirement, and budget. We
-              will filter suitable plots, flats, homes, or commercial spaces so
-              you spend time only on serious options.
-            </p>
+          <HeroVisual />
+          <div className="grid grid-cols-2 gap-2.5 sm:hidden">
+            <GoldButton href="#contact">Join Now</GoldButton>
             <a
-              href="#enquiry"
-              className="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-[#c79340] px-6 py-3.5 text-xs font-black uppercase tracking-[0.16em] text-[#21170f] shadow-[0_18px_45px_rgba(199,147,64,0.26)] transition hover:-translate-y-1 hover:bg-[#d6a34f] sm:text-sm"
+              href="#benefits"
+              className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/20 bg-white/10 px-3 py-2.5 text-xs font-black uppercase tracking-[0.12em] text-white backdrop-blur transition hover:bg-white hover:text-[#17120c]"
             >
-              Start Enquiry
-              <ArrowRight className="size-4" strokeWidth={2.5} />
+              Learn More
             </a>
           </div>
-          <div className="mt-8 grid gap-4 rounded-[1.8rem] border border-[#dfceb1] bg-[#fffaf0]/70 p-4 shadow-[0_24px_80px_rgba(48,36,19,0.08)] backdrop-blur sm:grid-cols-2 sm:p-5 lg:mt-10 lg:gap-5 md:grid-cols-4">
-            {steps.map((step, index) => (
-              <div
-                key={step}
-                className="rounded-2xl bg-white/65 p-4 shadow-sm sm:rounded-[1.5rem] sm:p-5"
-              >
-                <p className="inline-flex size-11 items-center justify-center rounded-full bg-[#284f45] font-serif text-xl font-bold text-[#f3cb7a]">
-                  0{index + 1}
-                </p>
-                <p className="mt-5 text-base font-bold text-[#1f2f29] sm:text-lg">
-                  {step}
-                </p>
-              </div>
+        </div>
+      </section>
+
+      <StatsBand />
+      <AboutSection />
+
+      <Section
+        id="benefits"
+        eyebrow="Benefits"
+        title="Benefits of Joining ANU Brand Connection"
+        intro="Hum aapko dete hain sahi margdarshan, better opportunities aur growth ka clear roadmap."
+        center
+        compact
+      >
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {benefits.map((benefit, index) => (
+            <FeatureCard key={benefit.title} item={benefit} index={index} />
+          ))}
+        </div>
+      </Section>
+
+      <AudienceSection />
+      <WhyJoinSection />
+      <ProfileSection />
+
+      <Section
+        id="training"
+        eyebrow="Training"
+        title="How You Will Be Trained"
+        intro="Live sessions, recorded courses, assignments aur personal support ke through aapko practical training milegi."
+        dark
+        center
+      >
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {trainingItems.map((item) => (
+            <TrainingCard key={item.title} item={item} />
+          ))}
+        </div>
+      </Section>
+
+      <section id="collaborations" className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="scroll-reveal mx-auto max-w-3xl text-center">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+              Collaborations
+            </p>
+              <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
+              How Corporate Collaborations Work
+            </h2>
+            <p className="mt-5 text-base leading-7 text-[#675235] sm:text-lg sm:leading-8">
+              Profile building se paid collaboration tak, hum har step par
+              guidance dete hain taaki brands aap par trust kar saken.
+            </p>
+          </div>
+          <div className="mt-10 grid gap-4 md:grid-cols-2 lg:mt-12 lg:grid-cols-4">
+            {collaborationSteps.map((step, index) => (
+              <StepCard key={step} step={step} index={index} />
             ))}
           </div>
         </div>
       </section>
 
-      <TestimonialsSwiper />
+      <PricingSection />
 
-      <section className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto max-w-7xl">
-          <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:gap-12">
+      <section className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+        <div className="scroll-reveal mx-auto max-w-7xl rounded-[1.6rem] border border-[#e0c995] bg-white p-5 shadow-[0_18px_55px_rgba(69,48,17,0.08)] sm:p-7 lg:p-8">
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
             <div>
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#a67327]">
-                FAQ
+              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+                Your Opportunity
               </p>
-              <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#1f2f29] sm:text-4xl lg:text-5xl">
-                Clear answers first.
+              <h2 className="mt-2 text-2xl font-extrabold leading-tight tracking-[0.005em] text-[#17120c] sm:text-3xl lg:text-4xl">
+                Ye sirf ek platform nahi, ye aapke sapno ko haqeeqat mein
+                badalne ka avsar hai.
               </h2>
-              <p className="mt-4 max-w-xl text-base leading-7 text-[#604c36] sm:text-lg sm:leading-8">
-                Quick answers to common property questions before you contact
-                our team.
-              </p>
-              <div className="mt-6">
-                <BookCallModal />
+              <div className="mt-5 grid gap-2.5 sm:grid-cols-2">
+                {ctaPoints.map((point) => (
+                  <div
+                    key={point}
+                    className="flex items-center gap-3 rounded-2xl border border-[#ead6aa] bg-[#fffaf0] p-3"
+                  >
+                    <CheckCircle2 className="size-5 shrink-0 text-[#b47a1f]" />
+                    <span className="text-sm font-bold text-[#4d3a22]">{point}</span>
+                  </div>
+                ))}
               </div>
             </div>
-            <FaqAccordion />
-          </div>
-        </div>
-      </section>
-
-      <section id="enquiry" className="px-4 py-10 sm:px-8 sm:py-16 lg:px-10 lg:py-20">
-        <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[1.8rem] bg-[#c79340] shadow-[0_30px_90px_rgba(199,147,64,0.26)] sm:rounded-[2.7rem] lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="relative isolate p-5 sm:p-8 lg:p-10 xl:p-12">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.32),transparent_30%)]" />
-            <p className="text-sm font-black uppercase tracking-[0.25em] text-[#4f3718]">
-              Make A Legendary Investment
-            </p>
-            <h2 className="mt-3 max-w-2xl font-serif text-3xl font-bold leading-tight tracking-[-0.025em] text-[#21170f] sm:text-4xl lg:text-5xl">
-              Ready to find your property?
-            </h2>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-[#4f3718] sm:mt-5 sm:text-lg sm:leading-8">
-              Drop your requirement below. Our experts will shortlist practical,
-              verified options and guide you with property and Vastu advice.
-            </p>
-            <div className="mt-6 grid gap-3 sm:mt-8 sm:grid-cols-2 sm:gap-4">
-              <InfoPill icon={MapPin} label="Office" value="Hinoo, Ranchi" />
-              <InfoPill
-                icon={Phone}
-                label="Consultation"
-                value="Property & Vastu Advice"
-              />
-            </div>
-          </div>
-
-          <div className="bg-[#1f2f29] p-5 text-white sm:p-8 lg:p-10 xl:p-12">
-            <div className="rounded-[1.5rem] border border-white/10 bg-white/[0.06] p-4 sm:rounded-[2rem] sm:p-7">
-              <p className="text-sm font-black uppercase tracking-[0.25em] text-[#f3cb7a]">
-                Quick Enquiry
-              </p>
-              <h3 className="mt-3 font-serif text-3xl font-bold leading-tight tracking-[-0.025em] sm:text-4xl">
-                Get the right shortlist.
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-[#d9d0bd]">
-                Fill in the details and we will help you compare best-fit
-                options for your location, budget, and purpose.
-              </p>
-              <EnquiryForm />
+            <div className="rounded-[1.4rem] bg-[#17120c] p-5">
+                <p className="text-sm font-semibold leading-7 text-[#fff3d5]">
+                Aaj hi ANU Brand Connection ke saath judiye. Learn, connect,
+                grow aur earn karne ke liye ek professional ecosystem ka hissa
+                baniye.
+                </p>
+                <div className="mt-5">
+                  <GoldButton href="#contact">Join ANU Brand Connection Today</GoldButton>
+                </div>
             </div>
           </div>
         </div>
       </section>
 
+      <FounderVisionSection />
+      <TestimonialSection />
+      <ContactSection />
       <Footer />
-      <MobileBottomNav />
-      <WhatsAppCta />
     </main>
   );
 }
 
-function HeroShowcase() {
+function Header() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   return (
-    <div className="relative mx-auto w-full max-w-[23rem] sm:max-w-xl">
-      <div className="absolute -right-5 top-8 h-44 w-44 animate-pulse rounded-full bg-[#284f45]/20 blur-2xl" />
-      <div className="absolute -bottom-6 -left-6 h-56 w-56 rounded-full bg-[#c79340]/25 blur-2xl" />
-
-      <div className="relative overflow-hidden rounded-[1.6rem] border border-white/70 bg-[#fffaf0]/75 p-2.5 shadow-[0_35px_100px_rgba(48,36,19,0.2)] backdrop-blur sm:rounded-[2.5rem] sm:p-4">
-        <div className="relative min-h-[360px] overflow-hidden rounded-[1.25rem] bg-[#1f2f29] p-4 text-white sm:min-h-[470px] sm:rounded-[2rem] sm:p-7">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_18%,rgba(243,203,122,0.28),transparent_28%),radial-gradient(circle_at_90%_5%,rgba(255,250,240,0.14),transparent_24%),linear-gradient(145deg,#162721_0%,#1f2f29_48%,#315d50_100%)]" />
-          <div className="absolute -right-12 top-8 h-36 w-36 rounded-full border border-white/10 bg-white/5" />
-          <div className="absolute left-8 top-8 h-20 w-20 rounded-[2rem] border border-[#f3cb7a]/20 bg-[#c79340]/20" />
-
-          <div className="relative grid gap-3">
-            <div className="ml-auto flex w-32 animate-[float_5s_ease-in-out_infinite] items-center gap-2 rounded-2xl border border-white/10 bg-white/10 p-2 backdrop-blur sm:w-48 sm:gap-3 sm:p-3">
-              <span className="grid size-8 place-items-center rounded-xl bg-[#f3cb7a] text-[#1f2f29] sm:size-10">
-                <BadgeIndianRupee className="size-4 sm:size-5" strokeWidth={2.4} />
+    <header className="fixed inset-x-0 top-0 z-50 h-[76px] border-b border-[#f6c45f]/20 bg-[#080704]/90 px-4 text-white shadow-[0_18px_60px_rgba(0,0,0,0.24)] backdrop-blur-xl sm:px-6 lg:h-[88px] lg:px-8">
+      <nav className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-4 lg:h-[88px]">
+        <a href="#home" className="flex min-w-0 items-center gap-3">
+          <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-sm font-black text-[#17120c] shadow-[0_12px_30px_rgba(246,196,95,0.25)]">
+            ANU
+          </span>
+          <span className="min-w-0 leading-tight">
+            <span className="block truncate text-sm font-black uppercase tracking-[0.13em] sm:text-base lg:text-lg">
+              ANU Brand
+            </span>
+            <span className="block truncate text-[11px] font-black uppercase tracking-[0.24em] text-[#f6c45f] lg:text-xs">
+              Connection
+            </span>
+          </span>
+        </a>
+        <div className="hidden items-center gap-8 text-sm font-bold text-white/72 lg:flex">
+          {navLinks.map((link) => (
+            <a key={link.label} href={link.href} className="transition hover:text-[#f6c45f]">
+              {link.label}
+            </a>
+          ))}
+        </div>
+        <a
+          href="#contact"
+          className="hidden rounded-full bg-[#f6c45f] px-6 py-3.5 text-xs font-black uppercase tracking-[0.16em] text-[#17120c] transition hover:-translate-y-0.5 hover:bg-white sm:inline-flex"
+        >
+          Join Now
+        </a>
+        <div className="relative lg:hidden">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            className="grid size-11 cursor-pointer place-items-center rounded-2xl border border-white/10 bg-white/[0.06] text-[#f6c45f] transition hover:bg-[#f6c45f] hover:text-[#17120c]"
+            aria-label="Open menu"
+            aria-expanded={drawerOpen}
+          >
+            <Menu className="size-5" strokeWidth={2.4} />
+          </button>
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(false)}
+            className={`fixed inset-0 z-[60] bg-black/30 transition-opacity duration-300 ${
+              drawerOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
+            }`}
+            aria-label="Close menu overlay"
+          />
+          <div
+            className={`fixed right-0 top-0 z-[70] h-[100svh] w-[min(82vw,20rem)] border-l border-[#e0c995] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.24)] transition-transform duration-300 ease-out ${
+              drawerOpen ? "translate-x-0" : "translate-x-full"
+            }`}
+          >
+            <div className="flex h-[76px] items-center gap-3 border-b border-[#e0c995] px-5 pr-16">
+              <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-sm font-black text-[#17120c]">
+                ANU
               </span>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#f3cb7a] sm:text-xs">
-                  Smart
-                </p>
-                <p className="text-xs font-bold text-white sm:text-sm">Investment</p>
-              </div>
+              <span className="min-w-0 leading-tight">
+                <span className="block text-sm font-black uppercase tracking-[0.13em] text-[#17120c]">
+                  ANU Brand
+                </span>
+                <span className="block text-[11px] font-black uppercase tracking-[0.24em] text-[#a87522]">
+                  Connection
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                className="absolute right-4 top-4 grid size-11 cursor-pointer place-items-center rounded-2xl border border-[#e0c995] bg-[#17120c] text-[#f6c45f]"
+                aria-label="Close menu"
+              >
+                <X className="size-5" strokeWidth={2.4} />
+              </button>
             </div>
-
-            <div className="mt-14 max-w-sm rounded-[1.2rem] border border-white/10 bg-white/[0.08] p-3.5 backdrop-blur-md sm:mt-8 sm:rounded-[1.6rem] sm:p-6">
-              <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f3cb7a]">
-                Premium Advisory
-              </p>
-              <h2 className="mt-1.5 max-w-lg font-serif text-lg font-bold leading-tight tracking-[-0.03em] sm:mt-2 sm:text-3xl">
-                Verified property. Clear guidance.
-              </h2>
+            <div className="p-5">
+            <div className="grid gap-2">
+              {navLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setDrawerOpen(false)}
+                  className="rounded-2xl border border-[#e0c995] bg-[#fffaf0] px-4 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#4d3a22] transition hover:bg-[#17120c] hover:text-[#f6c45f]"
+                >
+                  {link.label}
+                </a>
+              ))}
+              <a
+                href="#contact"
+                onClick={() => setDrawerOpen(false)}
+                className="mt-3 rounded-2xl bg-[#f6c45f] px-4 py-3 text-center text-sm font-black uppercase tracking-[0.14em] text-[#17120c]"
+              >
+                Join Now
+              </a>
+            </div>
             </div>
           </div>
+        </div>
+      </nav>
+    </header>
+  );
+}
 
-          <div className="absolute inset-x-4 bottom-4 grid grid-cols-3 gap-2 sm:inset-x-7 sm:bottom-7 sm:gap-3">
-            <PropertyMetric
-              icon={MapPin}
-              label="Plots"
-              value="01"
-              delay="animate-[rise_0.7s_ease-out_both]"
-            />
-            <PropertyMetric
-              icon={HomeIcon}
-              label="Homes"
-              value="02"
-              delay="animate-[rise_0.7s_0.12s_ease-out_both]"
-            />
-            <PropertyMetric
-              icon={Building2}
-              label="Commercial"
-              value="03"
-              delay="animate-[rise_0.7s_0.24s_ease-out_both]"
-            />
+function HeroVisual() {
+  return (
+    <div className="scroll-reveal relative mx-auto w-full max-w-sm sm:max-w-lg">
+      <div className="relative overflow-hidden rounded-[1.35rem] border border-[#f6c45f]/25 bg-[#fff8e8] p-2.5 shadow-[0_30px_90px_rgba(0,0,0,0.26)] sm:rounded-[1.75rem] sm:p-4">
+        <div className="rounded-[1.05rem] bg-[linear-gradient(145deg,#fffaf0_0%,#f1dca8_58%,#17120c_59%,#2c2113_100%)] p-4 sm:rounded-[1.35rem] sm:p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#9d6d1c] sm:text-xs sm:tracking-[0.24em]">
+                Creator Path
+              </p>
+              <h2 className="mt-1.5 text-lg font-extrabold tracking-[0.005em] text-[#17120c] sm:mt-2 sm:text-2xl">
+                Learn. Connect. Grow. Earn.
+              </h2>
+            </div>
+            <Sparkles className="size-6 text-[#b47a1f] sm:size-8" strokeWidth={2.2} />
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2.5 sm:mt-6 sm:gap-3">
+            {heroPillars.map((pillar, index) => (
+              <VisualPillar key={pillar.title} item={pillar} index={index} />
+            ))}
+          </div>
+          <div className="mt-4 rounded-[1rem] border border-white/10 bg-[#17120c] p-3 text-white sm:mt-5 sm:rounded-[1.25rem] sm:p-4">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-black sm:text-base">Campaign readiness</p>
+              <p className="text-sm font-black text-[#f6c45f]">92%</p>
+            </div>
+            <div className="mt-2.5 h-2.5 overflow-hidden rounded-full bg-white/10 sm:mt-3 sm:h-3">
+              <div className="h-full w-[92%] rounded-full bg-[linear-gradient(90deg,#f6c45f,#fff2b8)]" />
+            </div>
           </div>
         </div>
       </div>
@@ -544,241 +503,698 @@ function HeroShowcase() {
   );
 }
 
-function HeroCtas() {
+function StatsBand() {
   return (
-    <div className="grid grid-cols-2 justify-center gap-2 sm:flex sm:flex-row sm:gap-3 lg:justify-start">
-      <a
-        href="#enquiry"
-        className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-[#c79340] px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-[#21170f] shadow-[0_20px_50px_rgba(199,147,64,0.35)] transition hover:-translate-y-1 hover:bg-[#d6a34f] min-[390px]:text-xs sm:min-h-12 sm:w-auto sm:gap-2 sm:px-7 sm:py-4 sm:text-sm sm:tracking-[0.16em]"
-      >
-        Find Property
-        <ArrowRight className="size-3.5 sm:size-4" strokeWidth={2.5} />
-      </a>
-      <a
-        href="#services"
-        className="inline-flex min-h-11 items-center justify-center rounded-full border border-[#9f7c49]/45 bg-white/45 px-3 py-3 text-center text-[10px] font-black uppercase tracking-[0.1em] text-[#284f45] transition hover:-translate-y-1 hover:bg-white min-[390px]:text-xs sm:min-h-12 sm:w-auto sm:px-7 sm:py-4 sm:text-sm sm:tracking-[0.16em]"
-      >
-        Explore Services
-      </a>
-    </div>
-  );
-}
-
-function PropertyMetric({
-  icon: Icon,
-  label,
-  value,
-  delay,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  delay: string;
-}) {
-  return (
-    <div
-      className={`rounded-[1rem] border border-white/10 bg-white/[0.09] p-2.5 shadow-[0_18px_45px_rgba(0,0,0,0.16)] backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/[0.13] sm:rounded-[1.2rem] sm:p-4 ${delay}`}
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span className="grid size-8 place-items-center rounded-xl bg-[#f3cb7a]/95 text-[#1f2f29] sm:size-10">
-          <Icon className="size-4 sm:size-5" strokeWidth={2.4} />
-        </span>
-        <p className="font-serif text-xl font-bold text-[#f3cb7a] sm:text-2xl">{value}</p>
+    <section className="relative z-10 -mt-4 px-4 pb-12 sm:-mt-5 sm:px-6 sm:pb-16 lg:-mt-6 lg:px-8 lg:pb-20">
+      <div className="scroll-reveal mx-auto grid max-w-7xl grid-cols-2 gap-2 rounded-[1.35rem] border border-[#e5c67d] bg-white/92 p-2.5 shadow-[0_22px_80px_rgba(69,48,17,0.12)] backdrop-blur sm:grid-cols-2 sm:gap-3 sm:rounded-[1.8rem] sm:p-5 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="group rounded-[1rem] bg-[#fff8e8] p-3 text-center transition hover:bg-[#17120c] sm:rounded-[1.25rem] sm:p-6"
+          >
+            <p className="text-2xl font-extrabold tracking-[0.005em] text-[#17120c] transition group-hover:text-white sm:text-3xl">
+              {stat.value}
+            </p>
+            <p className="mt-1 text-[10px] font-black uppercase tracking-[0.13em] text-[#a87522] transition group-hover:text-[#f6c45f] sm:text-xs sm:tracking-[0.18em]">
+              {stat.label}
+            </p>
+          </div>
+        ))}
       </div>
-      <p className="mt-1.5 text-[9px] font-black uppercase tracking-[0.12em] text-white/70 sm:mt-3 sm:text-[10px] sm:tracking-[0.16em]">
-        {label}
-      </p>
-    </div>
+    </section>
   );
 }
 
-function InfoPill({
-  icon: Icon,
-  label,
-  value,
+function AboutSection() {
+  return (
+    <section className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-start lg:gap-12">
+        <div className="scroll-reveal">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+            About
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
+            About ANU Brand Connection
+          </h2>
+          <p className="mt-4 inline-flex rounded-full bg-[#17120c] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#f6c45f]">
+            5+ years industry experience
+          </p>
+        </div>
+        <div className="scroll-reveal">
+          <p className="text-base leading-7 text-[#675235] sm:text-lg sm:leading-8">
+            ANU Brand Connection brings 5+ years of industry and market
+            experience to help creators, influencers, and professionals grow
+            with practical direction. We understand digital growth, content
+            creation, brand positioning, and collaboration opportunities, and we
+            guide members with a clear roadmap.
+          </p>
+          <p className="mt-4 text-sm font-semibold leading-6 text-[#675235] sm:text-base">
+            Our vision is simple: give the right guidance, build a strong
+            network, and help you take your digital journey to the next level.
+          </p>
+          <p className="mt-4 text-sm font-semibold leading-6 text-[#675235] sm:text-base">
+            Learn new skills, build your identity, create a strong network, and
+            earn better income with confidence.
+          </p>
+          <p className="mt-4 text-sm font-semibold leading-6 text-[#675235] sm:text-base">
+            From profile building to content planning and brand communication,
+            our approach is practical, easy to follow, and focused on real
+            growth in the creator economy.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AudienceSection() {
+  return (
+    <section id="creators" className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-end">
+          <div className="scroll-reveal">
+            <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+              Who It Is For
+            </p>
+            <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
+              Designed for people who want to be seen professionally.
+            </h2>
+          </div>
+          <p className="scroll-reveal max-w-2xl text-base leading-7 text-[#675235] sm:text-lg sm:leading-8 lg:justify-self-end">
+            Chahe aap beginner ho ya already content bana rahe ho, the goal is
+            simple: build a stronger identity, improve your content quality, and
+            become ready for better opportunities.
+          </p>
+        </div>
+
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+          {audiences.map((audience) => {
+            const Icon = audience.icon;
+
+            return (
+              <article
+                key={audience.title}
+                className="scroll-reveal flex flex-col rounded-[1.6rem] border border-[#e0c995] bg-white p-5 shadow-[0_18px_55px_rgba(69,48,17,0.08)] transition hover:-translate-y-2 hover:shadow-[0_26px_75px_rgba(69,48,17,0.14)] sm:min-h-[220px] sm:p-6"
+              >
+                <span className="grid size-12 place-items-center rounded-2xl bg-[#17120c] text-[#f6c45f]">
+                  <Icon className="size-6" strokeWidth={2.2} />
+                </span>
+                <h3 className="mt-6 text-2xl font-extrabold tracking-[0.005em] text-[#17120c]">
+                  {audience.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-[#675235]">
+                  {audience.description}
+                </p>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PricingSection() {
+  return (
+    <section id="pricing" className="bg-[#f7f0df] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="scroll-reveal">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+            Pricing
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
+            Triple Nine Membership
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-[#675235] sm:text-lg sm:leading-8">
+            Ek baar ka investment, structured learning aur creator growth
+            support ke saath. Aapki creativity, hamari connectivity.
+          </p>
+          <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            {["New skills", "Your reach", "More income", "Strong network"].map(
+              (item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-3 rounded-2xl border border-[#e0c995] bg-white p-3 shadow-[0_12px_35px_rgba(69,48,17,0.06)]"
+                >
+                  <CheckCircle2 className="size-5 shrink-0 text-[#b47a1f]" />
+                  <p className="text-sm font-bold text-[#4d3a22]">{item}</p>
+                </div>
+              ),
+            )}
+          </div>
+        </div>
+
+        <div className="scroll-reveal rounded-[2rem] border border-[#e0c995] bg-[#17120c] p-6 text-white shadow-[0_28px_90px_rgba(69,48,17,0.18)] sm:p-8 lg:p-10">
+          <div className="rounded-[1.5rem] border border-[#f6c45f]/25 bg-[linear-gradient(135deg,rgba(246,196,95,0.2),rgba(255,255,255,0.06))] p-6 sm:p-8 lg:p-10">
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f6c45f]">
+              Membership
+            </p>
+            <div className="mt-4 flex flex-wrap items-end gap-3">
+              <span className="text-6xl font-extrabold leading-none tracking-[0.005em] text-white sm:text-7xl">
+                Rs. 999
+              </span>
+              <span className="mb-2 rounded-full bg-[#f6c45f] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#17120c]">
+                One-time
+              </span>
+            </div>
+            <p className="mt-5 text-sm font-semibold leading-6 text-[#fff3d5]/75">
+              Training, content creation guidance, brand connect support,
+              pitching guidance aur paid collaboration readiness ek hi
+              membership mein.
+            </p>
+            <div className="mt-7">
+              <GoldButton href="#contact">Join Now</GoldButton>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyJoinSection() {
+  return (
+    <section className="bg-[#fffaf0] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+        <div className="scroll-reveal">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+            Why Join
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
+            Kyon judein hamare saath?
+          </h2>
+          <p className="mt-5 max-w-2xl text-base leading-7 text-[#675235] sm:text-lg sm:leading-8">
+            Ye platform aapke dreams ko reality banane ke liye hai. Skills,
+            network, guidance aur earning opportunities ek structured system ke
+            saath milte hain.
+          </p>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {joinReasons.map((reason) => (
+            <div
+              key={reason}
+              className="scroll-reveal flex items-center gap-3 rounded-2xl border border-[#e0c995] bg-white p-5 shadow-[0_18px_55px_rgba(69,48,17,0.08)]"
+            >
+              <Star className="size-5 shrink-0 fill-[#b47a1f] text-[#b47a1f]" />
+              <p className="font-bold text-[#4d3a22]">{reason}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ProfileSection() {
+  return (
+    <section className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl gap-6 rounded-[2rem] border border-[#e0c995] bg-[#fffaf0] p-6 shadow-[0_24px_85px_rgba(69,48,17,0.1)] sm:p-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-10 lg:p-10">
+        <div className="scroll-reveal rounded-[1.6rem] bg-[#17120c] p-6 text-white sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f6c45f]">
+            Profile System
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] sm:text-4xl">
+            Build a brand-ready creator profile.
+          </h2>
+          <p className="mt-5 text-base leading-7 text-[#fff3d5]/75">
+            Brands notice clarity. We help you arrange your profile, content,
+            pitch, and communication so your digital presence feels reliable and
+            professional.
+          </p>
+          <div className="mt-8 flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.06] p-4">
+            <ChartNoAxesColumnIncreasing className="size-9 text-[#f6c45f]" />
+            <div>
+              <p className="font-black">Better presentation</p>
+              <p className="text-sm text-[#fff3d5]/65">Better conversations</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          {profileHighlights.map((item) => (
+            <div
+              key={item}
+              className="scroll-reveal flex items-start gap-3 rounded-2xl border border-[#e0c995] bg-white p-4"
+            >
+              <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-[#b47a1f]" />
+              <p className="text-sm font-bold leading-6 text-[#4d3a22]">{item}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Section({
+  id,
+  eyebrow,
+  title,
+  intro,
+  children,
+  dark = false,
+  center = false,
+  compact = false,
 }: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
+  id: string;
+  eyebrow: string;
+  title: string;
+  intro: string;
+  children: ReactNode;
+  dark?: boolean;
+  center?: boolean;
+  compact?: boolean;
 }) {
   return (
-    <div className="rounded-2xl border border-[#7f5721]/20 bg-white/25 p-4 sm:rounded-3xl sm:p-5">
-      <Icon className="mb-3 size-6 text-[#284f45] sm:mb-4 sm:size-7" strokeWidth={2.2} />
-      <p className="text-xs font-black uppercase tracking-[0.18em] text-[#704c1d]">
-        {label}
-      </p>
-      <p className="mt-1 font-black text-[#21170f]">{value}</p>
-    </div>
+    <section
+      id={id}
+      className={`px-4 sm:px-6 lg:px-8 ${
+        compact ? "py-12 sm:py-16 lg:py-20" : "py-12 sm:py-16 lg:py-20"
+      } ${
+        dark ? "bg-[#17120c] text-white" : "bg-[#f7f0df] text-[#17120c]"
+      }`}
+    >
+      <div className="mx-auto max-w-7xl">
+        <div className={`scroll-reveal max-w-3xl ${center ? "mx-auto text-center" : ""}`}>
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#c18a2d]">
+            {eyebrow}
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] sm:text-4xl lg:text-5xl">
+            {title}
+          </h2>
+          <p className={`mt-5 text-base leading-7 sm:text-lg sm:leading-8 ${dark ? "text-[#fff3d5]/75" : "text-[#675235]"}`}>
+            {intro}
+          </p>
+        </div>
+        <div className={compact ? "mt-7 sm:mt-8" : "mt-8 sm:mt-12"}>{children}</div>
+      </div>
+    </section>
   );
 }
 
 function FeatureCard({
   item,
+  index,
 }: {
-  item: {
-    title: string;
-    description: string;
-    tag: string;
-    icon: LucideIcon;
-  };
+  item: { title: string; description: string; icon: LucideIcon };
+  index: number;
 }) {
   const Icon = item.icon;
 
   return (
-    <article className="group overflow-hidden rounded-[1.6rem] border border-[#dfceb1] bg-[#fffaf0] shadow-[0_20px_60px_rgba(48,36,19,0.08)] transition hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(48,36,19,0.14)] sm:rounded-[2rem]">
-      <div className="relative min-h-36 bg-[linear-gradient(135deg,#1f2f29_0%,#315d50_52%,#c79340_100%)] p-5 text-white sm:min-h-48 sm:p-6">
-        <div className="absolute right-6 top-6 h-24 w-24 rounded-full bg-white/15 blur-xl" />
-        <span className="grid size-12 place-items-center rounded-2xl bg-white/12 text-[#f3cb7a] backdrop-blur sm:size-14">
-          <Icon className="size-6 sm:size-7" strokeWidth={2.2} />
+    <article className="scroll-reveal group flex flex-col rounded-[1.45rem] border border-[#e0c995] bg-white p-5 shadow-[0_18px_55px_rgba(69,48,17,0.08)] transition hover:-translate-y-2 hover:border-[#c18a2d] hover:shadow-[0_26px_75px_rgba(69,48,17,0.15)] sm:min-h-[230px] sm:p-6">
+      <div className="flex items-start justify-between gap-4">
+        <span className="grid size-12 place-items-center rounded-2xl bg-[#17120c] text-[#f6c45f] transition group-hover:rotate-3">
+          <Icon className="size-6" strokeWidth={2.2} />
         </span>
-        <p className="absolute bottom-5 left-5 rounded-full bg-white/15 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white backdrop-blur sm:bottom-6 sm:left-6">
-          {item.tag}
+        <span className="text-xs font-black uppercase tracking-[0.18em] text-[#c18a2d]">
+          0{index + 1}
+        </span>
+      </div>
+      <h3 className="mt-6 text-lg font-extrabold tracking-[0.005em] text-[#17120c]">
+        {item.title}
+      </h3>
+      <p className="mt-3 text-sm leading-6 text-[#675235]">{item.description}</p>
+    </article>
+  );
+}
+
+function TrainingCard({
+  item,
+}: {
+  item: { title: string; description: string; icon: LucideIcon };
+}) {
+  const Icon = item.icon;
+
+  return (
+    <article className="scroll-reveal rounded-[1.45rem] border border-white/10 bg-white/[0.06] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.18)] transition hover:-translate-y-2 hover:bg-white/[0.1] sm:min-h-[210px] sm:p-6">
+      <Icon className="size-8 text-[#f6c45f]" strokeWidth={2.2} />
+      <h3 className="mt-5 text-lg font-extrabold tracking-[0.005em]">{item.title}</h3>
+      <p className="mt-3 text-sm leading-6 text-[#fff3d5]/72">{item.description}</p>
+    </article>
+  );
+}
+
+function StepCard({ step, index }: { step: string; index: number }) {
+  const isOutcome = index === collaborationSteps.length - 1;
+
+  return (
+    <article
+      className={`scroll-reveal group relative overflow-hidden rounded-[1.45rem] p-5 shadow-[0_18px_55px_rgba(69,48,17,0.08)] transition hover:-translate-y-2 hover:shadow-[0_26px_75px_rgba(69,48,17,0.14)] sm:min-h-[230px] sm:p-6 ${
+        isOutcome
+          ? "border border-[#b47a1f] bg-[#17120c] text-white md:col-span-2 lg:col-span-4"
+          : "border border-[#e0c995] bg-[#fffaf0] hover:border-[#b47a1f] hover:bg-white"
+      }`}
+    >
+      <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#f6c45f,#b47a1f)]" />
+      <div className="flex items-center justify-between gap-4">
+        <p
+          className={`grid size-12 place-items-center rounded-2xl text-lg font-black shadow-[0_14px_35px_rgba(23,18,12,0.18)] transition ${
+            isOutcome
+              ? "bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-[#17120c]"
+              : "bg-[#17120c] text-[#f6c45f] group-hover:bg-[linear-gradient(135deg,#f7d985,#b47a1f)] group-hover:text-[#17120c]"
+          }`}
+        >
+          {index + 1}
         </p>
+        <span
+          className={`rounded-full px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] ${
+            isOutcome
+              ? "border border-[#f6c45f]/30 bg-white/10 text-[#f6c45f]"
+              : "border border-[#e0c995] bg-white text-[#a87522]"
+          }`}
+        >
+          {isOutcome ? "Outcome" : "Step"}
+        </span>
       </div>
-      <div className="p-5 sm:p-6">
-        <h3 className="text-xl font-bold tracking-[-0.03em] text-[#21170f] sm:text-2xl">
-          {item.title}
-        </h3>
-        <p className="mt-3 text-sm leading-6 text-[#6b553b] sm:mt-4 sm:text-base sm:leading-7">{item.description}</p>
-      </div>
-    </article>
-  );
-}
-
-function IndustryCard({
-  industry,
-}: {
-  industry: {
-    title: string;
-    description: string;
-    icon: LucideIcon;
-  };
-}) {
-  const Icon = industry.icon;
-
-  return (
-    <article className="rounded-2xl border border-[#dfceb1] bg-white/55 p-4 backdrop-blur transition hover:-translate-y-1 hover:bg-white/80 sm:rounded-[1.7rem] sm:p-5">
-      <Icon className="mb-4 size-7 text-[#284f45] sm:mb-5 sm:size-8" strokeWidth={2.2} />
-      <h3 className="text-lg font-bold tracking-[-0.03em] text-[#21170f] sm:text-xl">
-        {industry.title}
+      <h3
+        className={`mt-6 text-lg font-extrabold leading-tight tracking-[0.005em] sm:text-xl ${
+          isOutcome ? "text-white" : "text-[#17120c]"
+        }`}
+      >
+        {step}
       </h3>
-      <p className="mt-2 text-sm leading-6 text-[#6b553b] sm:mt-3 sm:text-base sm:leading-7">{industry.description}</p>
-    </article>
-  );
-}
-
-function ServiceCard({
-  index,
-  service,
-}: {
-  index: number;
-  service: (typeof services)[number];
-}) {
-  const Icon = service.icon;
-
-  return (
-    <article className="group rounded-[1.6rem] border border-[#dfceb1] bg-[#fffaf0] p-5 shadow-[0_20px_60px_rgba(48,36,19,0.08)] transition hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(48,36,19,0.14)] sm:rounded-[2rem] sm:p-6">
-      <div className="flex items-center justify-between">
-        <span className="grid size-12 place-items-center rounded-2xl bg-[#284f45] text-[#f3cb7a] transition group-hover:rotate-3 sm:size-14">
-          <Icon className="size-6 sm:size-7" strokeWidth={2.2} />
-        </span>
-        <span className="rounded-full bg-[#f0dfbd] px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] text-[#7a5724] sm:px-4 sm:text-xs sm:tracking-[0.16em]">
-          {service.detail}
-        </span>
-      </div>
-      <p className="mt-6 text-xs font-black uppercase tracking-[0.2em] text-[#c79340] sm:mt-8">
-        0{index + 1}
+      <p className={`mt-3 text-sm leading-6 ${isOutcome ? "text-[#fff3d5]/78" : "text-[#675235]"}`}>
+        {[
+          "Professional profile ready hoga taaki brands aap par trust kar saken.",
+          "Relevant brands ke saath right connection build karne mein support milega.",
+          "Pitch, email aur brand conversation ka practical guidance milega.",
+          "Deal terms, deliverables aur payment discussion mein support diya jayega.",
+          "Strong process ke baad paid campaign opportunity ke liye ready honge.",
+        ][index]}
       </p>
-      <h3 className="mt-3 text-xl font-bold tracking-[-0.03em] text-[#21170f] sm:text-2xl">
-        {service.title}
-      </h3>
-      <p className="mt-3 text-sm leading-6 text-[#6b553b] sm:mt-4 sm:text-base sm:leading-7">{service.description}</p>
     </article>
+  );
+}
+
+function TestimonialSection() {
+  return (
+    <section className="bg-[#fffaf0] px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto max-w-7xl">
+        <div className="scroll-reveal mx-auto max-w-3xl text-center">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#a87522]">
+            Member Voice
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
+            Confidence grows when direction becomes clear.
+          </h2>
+        </div>
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
+          {testimonials.map((item) => (
+            <article
+              key={item.name}
+              className="scroll-reveal flex flex-col rounded-[1.6rem] border border-[#e0c995] bg-white p-5 shadow-[0_18px_55px_rgba(69,48,17,0.08)] sm:min-h-[220px] sm:p-6"
+            >
+              <div className="flex gap-1 text-[#b47a1f]">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star key={star} className="size-4 fill-current" strokeWidth={1.8} />
+                ))}
+              </div>
+              <p className="mt-5 text-base font-semibold leading-7 text-[#4d3a22]">
+                "{item.quote}"
+              </p>
+              <p className="mt-auto pt-6 text-sm font-black uppercase tracking-[0.18em] text-[#a87522]">
+                {item.name}
+              </p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FounderVisionSection() {
+  return (
+    <section className="bg-[#17120c] px-4 py-12 text-white sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-center lg:gap-12">
+        <div className="scroll-reveal rounded-[1.6rem] bg-[linear-gradient(135deg,#f6c45f,#fff2b8)] p-6 text-[#17120c] sm:p-8 lg:p-10">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#684611]">
+            Founder Vision
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] sm:text-4xl lg:text-5xl">
+            Anu
+          </h2>
+          <p className="mt-5 text-base font-semibold leading-7 sm:text-lg sm:leading-8">
+            Har creator ko sahi direction, practical training aur professional
+            confidence milna chahiye, taaki woh apne talent ko real earning
+            opportunity mein badal sake.
+          </p>
+        </div>
+        <div className="scroll-reveal">
+          <p className="text-base leading-7 text-[#fff3d5]/78 sm:text-lg sm:leading-8">
+            ANU Brand Connection sirf membership nahi hai. Ye ek creator growth
+            ecosystem hai jahan Anu ka focus hai beginners aur professionals ko
+            step-by-step guide karna: profile building, content quality,
+            networking, pitching aur paid collaboration readiness tak.
+          </p>
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            {["Learn with clarity", "Connect with confidence", "Grow your identity", "Earn with dignity"].map((item) => (
+              <div
+                key={item}
+                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] p-4"
+              >
+                <CheckCircle2 className="size-5 shrink-0 text-[#f6c45f]" />
+                <p className="font-bold text-[#fff3d5]">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContactSection() {
+  return (
+    <section id="contact" className="px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+      <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[2rem] bg-white shadow-[0_30px_100px_rgba(69,48,17,0.14)] lg:grid-cols-[0.92fr_1.08fr]">
+        <div className="bg-[#17120c] p-6 text-white sm:p-8 lg:p-10">
+          <p className="text-xs font-black uppercase tracking-[0.24em] text-[#f6c45f]">
+            Contact
+          </p>
+          <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] sm:text-4xl">
+            Start your creator growth journey.
+          </h2>
+          <p className="mt-5 text-base leading-7 text-[#fff3d5]/75">
+            Share your details and the ANU Brand Connection team can help you
+            understand the next step for training, content, networking, and paid
+            collaboration guidance.
+          </p>
+          <a
+            href="https://wa.me/?text=Hello%20ANU%20Brand%20Connection%2C%20I%20want%20to%20join."
+            target="_blank"
+            rel="noreferrer"
+            className="mt-8 inline-flex items-center justify-center gap-2 rounded-full border border-[#f6c45f]/30 bg-white/10 px-5 py-3.5 text-sm font-black uppercase tracking-[0.14em] text-[#f6c45f] transition hover:-translate-y-1 hover:bg-[#f6c45f] hover:text-[#17120c]"
+          >
+            <MessageCircle className="size-5" strokeWidth={2.3} />
+            Chat on WhatsApp
+          </a>
+        </div>
+        <form className="grid gap-4 p-6 sm:p-8 lg:p-10">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField label="Name" name="name" placeholder="Your full name" />
+            <FormField label="Phone" name="phone" placeholder="Your phone number" type="tel" />
+          </div>
+          <FormField label="Email" name="email" placeholder="you@example.com" type="email" />
+          <label className="grid gap-2 text-sm font-bold text-[#4d3a22]">
+            Select Career Interest
+            <Select name="career-interest">
+              <SelectTrigger
+                aria-label="Select career interest"
+                className="rounded-2xl border-[#e0c995] bg-[#fffaf0] px-4 py-3 text-[#17120c] focus:border-[#b47a1f] focus:bg-white data-[placeholder]:text-[#9b855d]"
+              >
+                <SelectValue placeholder="Choose your interest" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem value="influencer-career">Influencer Career</SelectItem>
+                  <SelectItem value="professional-creator">Professional Creator</SelectItem>
+                  <SelectItem value="paid-collaboration">Paid Collaboration</SelectItem>
+                  <SelectItem value="brand-connect">Brand Connect</SelectItem>
+                  <SelectItem value="content-training">Content Creation Training</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </label>
+          <label className="grid gap-2 text-sm font-bold text-[#4d3a22]">
+            Message
+            <textarea
+              name="message"
+              placeholder="Tell us about your creator goals"
+              rows={5}
+              className="resize-none rounded-2xl border border-[#e0c995] bg-[#fffaf0] px-4 py-3 text-[#17120c] outline-none transition placeholder:text-[#9b855d] focus:border-[#b47a1f] focus:bg-white"
+            />
+          </label>
+          <button
+            type="button"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#17120c] px-6 py-3 text-sm font-black uppercase tracking-[0.16em] text-[#f6c45f] transition hover:-translate-y-1 hover:bg-[#b47a1f] hover:text-white"
+          >
+            Submit
+            <Send className="size-4" strokeWidth={2.4} />
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+function FormField({
+  label,
+  name,
+  placeholder,
+  type = "text",
+}: {
+  label: string;
+  name: string;
+  placeholder: string;
+  type?: string;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-bold text-[#4d3a22]">
+      {label}
+      <input
+        name={name}
+        placeholder={placeholder}
+        type={type}
+        className="rounded-2xl border border-[#e0c995] bg-[#fffaf0] px-4 py-3 text-[#17120c] outline-none transition placeholder:text-[#9b855d] focus:border-[#b47a1f] focus:bg-white"
+      />
+    </label>
+  );
+}
+
+function VisualPillar({
+  item,
+  index,
+}: {
+  item: { title: string; detail: string; icon: LucideIcon };
+  index: number;
+}) {
+  const Icon = item.icon;
+
+  return (
+    <div className="rounded-[1rem] border border-[#e4c37b] bg-white/75 p-3 shadow-sm backdrop-blur sm:rounded-[1.25rem] sm:p-4">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <span className="grid size-9 place-items-center rounded-xl bg-[#17120c] text-[#f6c45f] sm:size-11 sm:rounded-2xl">
+          <Icon className="size-4 sm:size-5" strokeWidth={2.3} />
+        </span>
+        <div>
+          <p className="text-[9px] font-black uppercase tracking-[0.14em] text-[#a87522] sm:text-xs sm:tracking-[0.18em]">
+            0{index + 1}
+          </p>
+          <p className="text-sm font-black text-[#17120c] sm:text-base">{item.title}</p>
+        </div>
+      </div>
+      <p className="mt-2 text-xs font-semibold text-[#675235] sm:mt-3 sm:text-sm">
+        {item.detail}
+      </p>
+    </div>
+  );
+}
+
+function GoldButton({
+  href,
+  children,
+}: {
+  href: string;
+  children: ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-full bg-[linear-gradient(135deg,#fff2b8,#f6c45f_52%,#b47a1f)] px-3 py-2.5 text-center text-xs font-black uppercase tracking-[0.12em] text-[#17120c] shadow-[0_18px_50px_rgba(246,196,95,0.32)] transition hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(246,196,95,0.42)] sm:min-h-12 sm:gap-2 sm:px-7 sm:py-3 sm:text-sm sm:tracking-[0.14em]"
+    >
+      {children}
+      <ArrowRight className="size-4" strokeWidth={2.5} />
+    </a>
   );
 }
 
 function Footer() {
   return (
-    <footer className="bg-[#21170f] px-4 py-10 text-white sm:px-8 sm:py-12 lg:px-10 lg:py-16">
+    <footer className="bg-[#080704] px-4 py-12 text-white sm:px-6 sm:py-14 lg:px-8 lg:py-16">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-[1.2fr_0.8fr_0.8fr]">
+        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.7fr_0.7fr_0.9fr] lg:gap-10">
           <div>
             <div className="flex items-center gap-3">
-              <span className="grid size-12 place-items-center rounded-full bg-[#f3cb7a] text-lg font-black text-[#21170f]">
-                SR
+              <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-sm font-black text-[#17120c]">
+                ANU
               </span>
-              <div>
-                <p className="text-sm font-black uppercase tracking-[0.22em] text-[#f3cb7a]">
-                  Sri Ram
-                </p>
-                <p className="text-sm font-bold text-white/70">
-                  Property Consultancy
-                </p>
-              </div>
+              <span className="leading-tight">
+                <span className="block text-base font-black uppercase tracking-[0.13em] text-white">
+                  ANU Brand
+                </span>
+                <span className="block text-xs font-black uppercase tracking-[0.24em] text-[#f6c45f]">
+                  Connection
+                </span>
+              </span>
             </div>
-            <p className="mt-4 max-w-md text-sm leading-6 text-white/70 sm:mt-6 sm:text-base sm:leading-7">
-              Verified plots, luxury homes, commercial spaces, and expert Vastu
-              guidance for clients who want clarity before commitment.
+            <p className="mt-5 max-w-md text-sm font-semibold leading-6 text-white/62">
+              Helping creators, influencers, and professionals learn, connect,
+              grow, and earn with practical guidance and brand-ready confidence.
+            </p>
+            <p className="mt-4 text-sm font-black text-[#f6c45f]">
+              Learn | Connect | Grow | Earn
             </p>
           </div>
+
+          <FooterColumn
+            title="Quick Links"
+            links={[
+              { label: "Home", href: "#home" },
+              { label: "Benefits", href: "#benefits" },
+              { label: "Training", href: "#training" },
+              { label: "Pricing", href: "#pricing" },
+            ]}
+          />
+
+          <FooterColumn
+            title="Programs"
+            links={[
+              { label: "Influencer Career", href: "#creators" },
+              { label: "Content Creation", href: "#benefits" },
+              { label: "Brand Connect", href: "#collaborations" },
+              { label: "Paid Collaboration", href: "#collaborations" },
+            ]}
+          />
 
           <div>
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f3cb7a]">
-              Services
-            </p>
-            <div className="mt-4 grid gap-2 text-sm font-bold text-white/70 sm:mt-5 sm:gap-3">
-              <a href="#services" className="transition hover:text-white">
-                Premium Plots
-              </a>
-              <a href="#services" className="transition hover:text-white">
-                Luxury Flats & Homes
-              </a>
-              <a href="#services" className="transition hover:text-white">
-                Commercial Spaces
-              </a>
-            </div>
-          </div>
-
-          <div>
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f3cb7a]">
-              Visit
-            </p>
-            <div className="mt-4 grid gap-2 text-sm font-bold text-white/70 sm:mt-5 sm:gap-3">
-              <p>Office: Hinoo, Ranchi</p>
-              <p>Property & Vastu Advice</p>
-              <a href="#enquiry" className="text-[#f3cb7a] hover:text-white">
-                Send Enquiry
-              </a>
-            </div>
-          </div>
-
-          <div className="sm:col-span-2 lg:col-span-3">
-            <p className="text-sm font-black uppercase tracking-[0.2em] text-[#f3cb7a]">
+            <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f6c45f]">
               Connect
             </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              <a
-                href="#"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm font-bold text-white/72 transition hover:bg-white/12 hover:text-white"
-              >
-                <FacebookIcon />
-                Facebook
-              </a>
-              <a
-                href="https://wa.me/?text=Hello%20Sri%20Ram%20Property%20Consultancy%2C%20I%20want%20property%20guidance%20in%20Ranchi."
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2.5 text-sm font-bold text-white/72 transition hover:bg-white/12 hover:text-white"
-              >
-                <MessageCircle className="size-4" strokeWidth={2.3} />
-                WhatsApp
-              </a>
+            <div className="mt-4 flex flex-wrap gap-2.5">
+              {[
+                { label: "Instagram", icon: Camera },
+                { label: "YouTube", icon: Play },
+                { label: "LinkedIn", icon: Link },
+              ].map((social) => {
+                const Icon = social.icon;
+
+                return (
+                  <a
+                    key={social.label}
+                    href="#home"
+                    className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3.5 py-2.5 text-sm font-bold text-white/70 transition hover:bg-[#f6c45f] hover:text-[#17120c]"
+                  >
+                    <Icon className="size-4" strokeWidth={2.3} />
+                    {social.label}
+                  </a>
+                );
+              })}
             </div>
+            <a
+              href="#contact"
+              className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-[#f6c45f] px-5 py-3 text-sm font-black uppercase tracking-[0.14em] text-[#17120c] transition hover:bg-white sm:w-auto"
+            >
+              Join Now
+            </a>
           </div>
         </div>
-        <div className="mt-8 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs font-bold text-white/45 sm:mt-10 sm:flex-row sm:items-center sm:justify-between sm:text-sm">
-          <p>Sri Ram Property Consultancy. Real Estate Consultancy in Ranchi.</p>
-          <a href="#top" className="text-[#f3cb7a] transition hover:text-white">
+
+        <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs font-bold text-white/45 sm:flex-row sm:items-center sm:justify-between">
+          <p>ANU Brand Connection. Creator growth and collaboration platform.</p>
+          <a href="#home" className="text-[#f6c45f] transition hover:text-white">
             Back to top
           </a>
         </div>
@@ -787,66 +1203,29 @@ function Footer() {
   );
 }
 
-function MobileBottomNav() {
-  const items = [
-    { label: "About", href: "#about", icon: UsersRound },
-    { label: "Services", href: "#services", icon: Building2 },
-    { label: "Projects", href: "#projects", icon: Landmark },
-    { label: "Contact", href: "#enquiry", icon: Phone },
-  ];
-
+function FooterColumn({
+  title,
+  links,
+}: {
+  title: string;
+  links: { label: string; href: string }[];
+}) {
   return (
-    <nav className="fixed inset-x-3 bottom-3 z-50 rounded-[1.5rem] border border-[#d7c4a3]/70 bg-[#fffaf0]/92 p-1.5 shadow-[0_18px_50px_rgba(48,36,19,0.2)] backdrop-blur-xl md:hidden">
-      <div className="grid grid-cols-4 gap-1">
-        {items.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <a
-              key={item.label}
-              href={item.href}
-              className="flex flex-col items-center justify-center gap-1 rounded-[1.1rem] px-2 py-2 text-[10px] font-black text-[#61482d] transition hover:bg-[#284f45] hover:text-white min-[390px]:text-[11px]"
-            >
-              <Icon className="size-5" strokeWidth={2.4} />
-              <span>{item.label}</span>
-            </a>
-          );
-        })}
+    <div>
+      <p className="text-xs font-black uppercase tracking-[0.22em] text-[#f6c45f]">
+        {title}
+      </p>
+      <div className="mt-4 grid gap-3">
+        {links.map((link) => (
+          <a
+            key={link.label}
+            href={link.href}
+            className="text-sm font-bold text-white/62 transition hover:text-white"
+          >
+            {link.label}
+          </a>
+        ))}
       </div>
-    </nav>
-  );
-}
-
-function FacebookIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      className="size-4"
-      fill="currentColor"
-      viewBox="0 0 24 24"
-    >
-      <path d="M14 8.4V6.8c0-.76.18-1.2 1.2-1.2H17V2.3C16.2 2.2 15.4 2 14.3 2c-2.7 0-4.5 1.6-4.5 4.6v1.8H7v3.7h2.8V22H14v-9.9h2.8l.4-3.7H14Z" />
-    </svg>
-  );
-}
-
-function WhatsAppCta() {
-  return (
-    <a
-      href="https://wa.me/?text=Hello%20Sri%20Ram%20Property%20Consultancy%2C%20I%20want%20property%20guidance%20in%20Ranchi."
-      target="_blank"
-      rel="noreferrer"
-      className="fixed bottom-[5.75rem] right-4 z-50 grid size-12 place-items-center rounded-full border border-white/35 bg-[#25d366]/90 text-white shadow-[0_18px_45px_rgba(37,211,102,0.28)] backdrop-blur transition hover:-translate-y-1 hover:bg-[#25d366] hover:shadow-[0_22px_55px_rgba(37,211,102,0.38)] sm:right-6 sm:size-16 md:bottom-6"
-      aria-label="Chat on WhatsApp"
-    >
-      <svg
-        aria-hidden="true"
-        className="size-6 sm:size-8"
-        fill="currentColor"
-        viewBox="0 0 32 32"
-      >
-        <path d="M16.03 4.5A11.42 11.42 0 0 0 6.1 21.6L4.5 27.5l6.05-1.58A11.42 11.42 0 1 0 16.03 4.5Zm0 20.78a9.3 9.3 0 0 1-4.72-1.29l-.34-.2-3.58.94.96-3.48-.22-.36a9.32 9.32 0 1 1 7.9 4.39Zm5.1-6.98c-.28-.14-1.64-.8-1.9-.9-.25-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.08-.16.18-.32.2-.6.07-.28-.14-1.18-.43-2.25-1.38-.83-.74-1.4-1.66-1.56-1.94-.16-.27-.02-.42.12-.56.13-.13.28-.32.42-.48.14-.16.18-.27.27-.46.09-.18.05-.34-.02-.48-.07-.14-.62-1.5-.86-2.05-.22-.53-.45-.45-.62-.46h-.53c-.18 0-.48.07-.73.34-.25.28-.96.94-.96 2.28s.98 2.64 1.12 2.82c.14.18 1.93 2.94 4.67 4.12.65.28 1.16.45 1.56.58.65.2 1.25.17 1.72.1.52-.08 1.64-.67 1.87-1.32.23-.65.23-1.2.16-1.32-.07-.12-.25-.19-.53-.32Z" />
-      </svg>
-    </a>
+    </div>
   );
 }

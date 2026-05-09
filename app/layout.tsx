@@ -10,9 +10,9 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Sri Ram Property Consultancy | Verified Properties in Ranchi",
+  title: "ANU Brand Connection | Learn, Connect, Grow, Earn",
   description:
-    "Premium plots, luxury homes, and commercial property consultancy in Hinoo, Ranchi with transparent deals and expert Vastu guidance.",
+    "Creator and influencer growth platform for training, content creation, brand connections, and paid collaboration guidance.",
 };
 
 export default function RootLayout({
