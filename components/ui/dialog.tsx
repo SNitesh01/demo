@@ -53,8 +53,7 @@ function DialogContent({
       <DialogOverlay />
       <DialogPrimitive.Content
         data-slot="dialog-content"
-        className={cn(
-          "fixed left-1/2 top-1/2 z-[90] max-h-[88svh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[1.8rem] border border-white/10 bg-[#1f2f29] p-5 text-white shadow-[0_35px_120px_rgba(0,0,0,0.35)] outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-[2.2rem] sm:p-7",
+        className={cn("fixed left-1/2 top-1/2 z-[90] max-h-[88svh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[1.8rem] border border-white/10 bg-[#1f2f29] p-5 text-white shadow-[0_35px_120px_rgba(0,0,0,0.35)] outline-none data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-[2.2rem] sm:p-7",
           className,
         )}
         {...props}
