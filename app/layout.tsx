@@ -10,7 +10,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "ANU Brand Connection | Learn, Connect, Grow, Earn",
+  title: "Annu Brand Connection | Learn, Connect, Grow, Earn",
   description:
     "Creator and influencer growth platform for training, content creation, brand connections, and paid collaboration guidance.",
 };

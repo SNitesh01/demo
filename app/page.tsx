@@ -202,7 +202,7 @@ const testimonials = [
   },
   {
     quote:
-      "ANU Brand Connection ne guidance, support aur roadmap diya. Pehle confusion tha, ab clarity hai.",
+      "Annu Brand Connection ne guidance, support aur roadmap diya. Pehle confusion tha, ab clarity hai.",
     name: "Professional member",
   },
 ];
@@ -263,7 +263,7 @@ export default function Home() {
       <Section
         id="benefits"
         eyebrow="Benefits"
-        title="Benefits of Joining ANU Brand Connection"
+        title="Benefits of Joining Annu Brand Connection"
         intro="Hum aapko dete hain sahi margdarshan, better opportunities aur growth ka clear roadmap."
         center
         compact
@@ -343,12 +343,12 @@ export default function Home() {
             </div>
             <div className="rounded-[1.4rem] bg-[#17120c] p-5">
                 <p className="text-sm font-semibold leading-7 text-[#fff3d5]">
-                Aaj hi ANU Brand Connection ke saath judiye. Learn, connect,
+                Aaj hi Annu Brand Connection ke saath judiye. Learn, connect,
                 grow aur earn karne ke liye ek professional ecosystem ka hissa
                 baniye.
                 </p>
                 <div className="mt-5">
-                  <GoldButton href="#contact">Join ANU Brand Connection Today</GoldButton>
+                  <GoldButton href="#contact">Join Annu Brand Connection Today</GoldButton>
                 </div>
             </div>
           </div>
@@ -371,11 +371,11 @@ function Header() {
       <nav className="mx-auto flex h-[76px] max-w-7xl items-center justify-between gap-4 lg:h-[88px]">
         <a href="#home" className="flex min-w-0 items-center gap-3">
           <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-sm font-black text-[#17120c] shadow-[0_12px_30px_rgba(246,196,95,0.25)]">
-            ANU
+            Annu
           </span>
           <span className="min-w-0 leading-tight">
             <span className="block truncate text-sm font-black uppercase tracking-[0.13em] sm:text-base lg:text-lg">
-              ANU Brand
+              Annu Brand
             </span>
             <span className="block truncate text-[11px] font-black uppercase tracking-[0.24em] text-[#f6c45f] lg:text-xs">
               Connection
@@ -420,11 +420,11 @@ function Header() {
           >
             <div className="flex h-[76px] items-center gap-3 border-b border-[#e0c995] px-5 pr-16">
               <span className="grid size-11 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-sm font-black text-[#17120c]">
-                ANU
+                Annu
               </span>
               <span className="min-w-0 leading-tight">
                 <span className="block text-sm font-black uppercase tracking-[0.13em] text-[#17120c]">
-                  ANU Brand
+                  Annu Brand
                 </span>
                 <span className="block text-[11px] font-black uppercase tracking-[0.24em] text-[#a87522]">
                   Connection
@@ -534,7 +534,7 @@ function AboutSection() {
             About
           </p>
           <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] text-[#17120c] sm:text-4xl lg:text-5xl">
-            About ANU Brand Connection
+            About Annu Brand Connection
           </h2>
           <p className="mt-4 inline-flex rounded-full bg-[#17120c] px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-[#f6c45f]">
             5+ years industry experience
@@ -542,7 +542,7 @@ function AboutSection() {
         </div>
         <div className="scroll-reveal">
           <p className="text-base leading-7 text-[#675235] sm:text-lg sm:leading-8">
-            ANU Brand Connection brings 5+ years of industry and market
+            Annu Brand Connection brings 5+ years of industry and market
             experience to help creators, influencers, and professionals grow
             with practical direction. We understand digital growth, content
             creation, brand positioning, and collaboration opportunities, and we
@@ -934,7 +934,7 @@ function FounderVisionSection() {
             Founder Vision
           </p>
           <h2 className="mt-3 text-2xl font-extrabold tracking-[0.005em] sm:text-4xl lg:text-5xl">
-            Anu
+            Annu
           </h2>
           <p className="mt-5 text-base font-semibold leading-7 sm:text-lg sm:leading-8">
             Har creator ko sahi direction, practical training aur professional
@@ -944,8 +944,8 @@ function FounderVisionSection() {
         </div>
         <div className="scroll-reveal">
           <p className="text-base leading-7 text-[#fff3d5]/78 sm:text-lg sm:leading-8">
-            ANU Brand Connection sirf membership nahi hai. Ye ek creator growth
-            ecosystem hai jahan Anu ka focus hai beginners aur professionals ko
+            Annu Brand Connection sirf membership nahi hai. Ye ek creator growth
+            ecosystem hai jahan Annu ka focus hai beginners aur professionals ko
             step-by-step guide karna: profile building, content quality,
             networking, pitching aur paid collaboration readiness tak.
           </p>
@@ -978,12 +978,12 @@ function ContactSection() {
             Start your creator growth journey.
           </h2>
           <p className="mt-5 text-base leading-7 text-[#fff3d5]/75">
-            Share your details and the ANU Brand Connection team can help you
+            Share your details and the Annu Brand Connection team can help you
             understand the next step for training, content, networking, and paid
             collaboration guidance.
           </p>
           <a
-            href="https://wa.me/?text=Hello%20ANU%20Brand%20Connection%2C%20I%20want%20to%20join."
+            href="https://wa.me/?text=Hello%20Annu%20Brand%20Connection%2C%20I%20want%20to%20join."
             target="_blank"
             rel="noreferrer"
             className="mt-8 inline-flex items-center justify-center gap-2 rounded-full border border-[#f6c45f]/30 bg-white/10 px-5 py-3.5 text-sm font-black uppercase tracking-[0.14em] text-[#f6c45f] transition hover:-translate-y-1 hover:bg-[#f6c45f] hover:text-[#17120c]"
@@ -1119,11 +1119,11 @@ function Footer() {
           <div>
             <div className="flex items-center gap-3">
               <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-[linear-gradient(135deg,#f7d985,#b47a1f)] text-sm font-black text-[#17120c]">
-                ANU
+                Annu
               </span>
               <span className="leading-tight">
                 <span className="block text-base font-black uppercase tracking-[0.13em] text-white">
-                  ANU Brand
+                  Annu Brand
                 </span>
                 <span className="block text-xs font-black uppercase tracking-[0.24em] text-[#f6c45f]">
                   Connection
@@ -1193,7 +1193,7 @@ function Footer() {
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-white/10 pt-5 text-xs font-bold text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <p>ANU Brand Connection. Creator growth and collaboration platform.</p>
+          <p>Annu Brand Connection. Creator growth and collaboration platform.</p>
           <a href="#home" className="text-[#f6c45f] transition hover:text-white">
             Back to top
           </a>
