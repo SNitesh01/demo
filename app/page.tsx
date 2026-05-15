@@ -1,7 +1,7 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -14,12 +14,15 @@ import {
   Link2,
   Mail,
   Menu,
+  Minus,
+  Plus,
   Search,
   Shield,
   ShoppingBag,
   SlidersHorizontal,
   Sparkles,
   Star,
+  Trash2,
   Undo2,
   User,
   X,
@@ -49,9 +52,36 @@ function u(id: string, w: number) {
   return `https://images.unsplash.com/photo-${id}?w=${w}&q=80`;
 }
 
-/** Replace FILM_SRC with your own textile / loom clip when ready. */
+/** Replace FILM_SRC with your own textile / bedding clip when ready. */
 const FILM_POSTER = u(P.fabric, 1600);
 const FILM_SRC = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+
+const lightPrivacyStories = [
+  {
+    title: "Sheers that soften daylight",
+    body: "Airy curtain layers filter glare while keeping rooms bright, gentle, and lived-in.",
+    cta: "Shop curtains",
+    href: "#bestsellers",
+    poster: u(P.interiorA, 1200),
+    video: "https://videos.pexels.com/video-files/854116/854116-hd_1920_1080_25fps.mp4",
+  },
+  {
+    title: "Bedding with quiet movement",
+    body: "White sheets and layered duvets settle into a crisp, hotel-fresh finish.",
+    cta: "Build your bed",
+    href: "#featured",
+    poster: u(P.bedroom, 1200),
+    video: "https://videos.pexels.com/video-files/10555331/10555331-uhd_4096_2160_25fps.mp4",
+  },
+  {
+    title: "Privacy for golden hour",
+    body: "Soft panels create a calm screen for evenings without losing the glow.",
+    cta: "View panels",
+    href: "#bestsellers",
+    poster: u(P.interiorB, 1200),
+    video: "https://www.pexels.com/download/video/7945783/",
+  },
+] as const;
 
 type Product = {
   id: string;
@@ -63,6 +93,10 @@ type Product = {
   imageId: string;
   badge?: "Sale" | "New" | "Limited";
   blurb: string;
+};
+
+type CartItem = Product & {
+  quantity: number;
 };
 
 function productHref(label: string) {
@@ -153,7 +187,7 @@ const featured: Product[] = [
   },
   {
     id: "f2",
-    name: "Loom Down Alternative Pillow",
+    name: "Gloria Beddings Down Alternative Pillow",
     price: 7999,
     rating: 4.8,
     reviewCount: 186,
@@ -163,7 +197,7 @@ const featured: Product[] = [
   },
   {
     id: "f3",
-    name: "Maison Weighted Quilt",
+    name: "Gloria Beddings Weighted Quilt",
     price: 20499,
     compareAt: 24699,
     rating: 4.7,
@@ -230,7 +264,7 @@ const newArrivals: Product[] = [
 const bestSellers: Product[] = [
   {
     id: "b1",
-    name: "Maison Everyday Duvet",
+    name: "Gloria Beddings Everyday Duvet",
     price: 22199,
     compareAt: 26499,
     rating: 4.9,
@@ -505,7 +539,7 @@ function ProductSwiper({
 }: {
   products: Product[];
   onQuickView: (p: Product) => void;
-  onAddToCart: () => void;
+  onAddToCart: (p: Product) => void;
 }) {
   const uid = useId();
   return (
@@ -524,7 +558,7 @@ function ProductSwiper({
     >
       {products.map((p) => (
         <SwiperSlide key={`${uid}-${p.id}`} className="!h-auto">
-          <ProductCard product={p} onQuickView={() => onQuickView(p)} onAddToCart={onAddToCart} />
+          <ProductCard product={p} onQuickView={() => onQuickView(p)} onAddToCart={() => onAddToCart(p)} />
         </SwiperSlide>
       ))}
     </Swiper>
@@ -690,11 +724,33 @@ function HeroSection({ reduce, topChromeH }: { reduce: boolean; topChromeH: numb
 export default function Home() {
   const reduce = useReducedMotion();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(0);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [quickView, setQuickView] = useState<Product | null>(null);
   const [newsletter, setNewsletter] = useState("");
   const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "sent">("idle");
   const [topChromeH, setTopChromeH] = useState(0);
+  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const cartSubtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const addToCart = (product: Product) => {
+    setCartItems((items) => {
+      const existing = items.find((item) => item.id === product.id);
+      if (existing) {
+        return items.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
+      }
+      return [...items, { ...product, quantity: 1 }];
+    });
+    setCartOpen(true);
+  };
+
+  const updateCartQuantity = (id: string, nextQuantity: number) => {
+    setCartItems((items) =>
+      nextQuantity <= 0
+        ? items.filter((item) => item.id !== id)
+        : items.map((item) => (item.id === id ? { ...item, quantity: nextQuantity } : item)),
+    );
+  };
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -730,7 +786,7 @@ export default function Home() {
           <div className={`${pageInnerClass} relative flex min-w-0 items-center justify-between gap-3 py-3 sm:py-4`}>
             <div className="flex min-w-0 flex-1 items-center gap-5 lg:gap-10">
               <a href="#home" className="shrink-0 font-serif text-xl font-semibold tracking-[0.06em] sm:text-2xl lg:text-[1.65rem]">
-                Maison Loom
+                Gloria Beddings
               </a>
 
               <nav className="hidden min-w-0 items-center gap-1 lg:flex" aria-label="Primary">
@@ -768,6 +824,7 @@ export default function Home() {
               <button
                 type="button"
                 aria-label={`Cart, ${cartCount} items`}
+                onClick={() => setCartOpen(true)}
                 className="relative grid size-10 place-items-center rounded-full text-[#3a342e] transition hover:bg-black/[0.04]"
               >
                 <ShoppingBag className="size-[18px] stroke-[1.6]" />
@@ -858,7 +915,7 @@ export default function Home() {
                 </a>
               </FadeIn>
               <FadeIn className="mt-10" delay={0.06}>
-                <ProductSwiper products={featured} onQuickView={setQuickView} onAddToCart={() => setCartCount((c) => c + 1)} />
+                <ProductSwiper products={featured} onQuickView={setQuickView} onAddToCart={addToCart} />
               </FadeIn>
             </div>
           </section>
@@ -866,7 +923,7 @@ export default function Home() {
           <section id="why" className="border-y border-black/[0.06] bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
             <div className="mx-auto max-w-6xl text-center">
               <FadeIn>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Why Maison Loom</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Why Gloria Beddings</p>
                 <h2 className="mt-3 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Quiet quality you can feel</h2>
                 <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#6b635a] sm:text-base">
                   We obsess over weight, drape, and the way fabric sounds when you turn over at midnight—because details define luxury.
@@ -896,7 +953,7 @@ export default function Home() {
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#6b635a]">Fresh textures for bath, bed, and living—small batches, honest photography.</p>
               </FadeIn>
               <FadeIn className="mt-10" delay={0.06}>
-                <ProductSwiper products={newArrivals} onQuickView={setQuickView} onAddToCart={() => setCartCount((c) => c + 1)} />
+                <ProductSwiper products={newArrivals} onQuickView={setQuickView} onAddToCart={addToCart} />
               </FadeIn>
             </div>
           </section>
@@ -923,6 +980,55 @@ export default function Home() {
             </section>
           </FadeIn>
 
+          <section className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+            <div className="mx-auto max-w-7xl">
+              <FadeIn className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Window to bedroom</p>
+                  <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">The Art of Light & Privacy</h2>
+                </div>
+                <p className="max-w-xl text-sm leading-relaxed text-[#6b635a]">
+                  Slow, tactile moments for curtains and bedding that shape daylight, privacy, and the way a room settles.
+                </p>
+              </FadeIn>
+              <Stagger className="mt-10 grid gap-6 lg:grid-cols-3">
+                {lightPrivacyStories.map((story) => (
+                  <StaggerItem key={story.title}>
+                    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-[#faf8f5] shadow-[0_14px_44px_rgba(42,38,34,0.06)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(42,38,34,0.1)]">
+                      <div className="relative aspect-[4/5] overflow-hidden bg-[#1f1b17]">
+                        <video
+                          className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
+                          poster={story.poster}
+                          muted
+                          loop
+                          playsInline
+                          autoPlay
+                          preload="metadata"
+                          onLoadedMetadata={(e) => {
+                            e.currentTarget.playbackRate = reduce ? 1 : 0.62;
+                          }}
+                        >
+                          <source src={story.video} type="video/mp4" />
+                        </video>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1f1b17]/80 via-[#1f1b17]/18 to-transparent" />
+                      </div>
+                      <div className="flex flex-1 flex-col p-6">
+                        <h3 className="font-serif text-2xl font-medium leading-tight text-[#2a2622]">{story.title}</h3>
+                        <p className="mt-3 flex-1 text-sm leading-relaxed text-[#6b635a]">{story.body}</p>
+                        <a
+                          href={story.href}
+                          className="mt-6 inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-[#2a2622] px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black"
+                        >
+                          {story.cta}
+                        </a>
+                      </div>
+                    </article>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+            </div>
+          </section>
+
           <section id="bestsellers" className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
             <div className="mx-auto max-w-7xl">
               <FadeIn className="text-center">
@@ -931,8 +1037,33 @@ export default function Home() {
                 <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#6b635a]">Pieces that earn repeat orders—swipe to explore the full set.</p>
               </FadeIn>
               <FadeIn className="mt-10" delay={0.06}>
-                <ProductSwiper products={bestSellers} onQuickView={setQuickView} onAddToCart={() => setCartCount((c) => c + 1)} />
+                <ProductSwiper products={bestSellers} onQuickView={setQuickView} onAddToCart={addToCart} />
               </FadeIn>
+            </div>
+          </section>
+
+          <section className="border-y border-black/[0.06] bg-[#f3efe8] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
+            <div className="mx-auto max-w-6xl">
+              <FadeIn className="text-center">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Why Gloria Beddings</p>
+                <h2 className="mt-3 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Softness, structure, and everyday ease</h2>
+                <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#6b635a] sm:text-base">
+                  Thoughtful materials, calm styling, and dependable finishing for bedding that feels special without becoming fussy.
+                </p>
+              </FadeIn>
+              <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                {whyUs.map(({ title, body, Icon }) => (
+                  <StaggerItem key={`review-why-${title}`}>
+                    <div className="h-full rounded-2xl border border-black/[0.06] bg-white p-6 text-left shadow-[0_14px_44px_rgba(42,38,34,0.06)]">
+                      <span className="inline-flex size-11 items-center justify-center rounded-full border border-[#e6dfd3] bg-[#faf8f5] text-[#b6a06a]">
+                        <Icon className="size-5" strokeWidth={1.35} />
+                      </span>
+                      <h3 className="mt-5 text-sm font-semibold uppercase tracking-[0.16em] text-[#2a2622]">{title}</h3>
+                      <p className="mt-3 text-sm leading-relaxed text-[#6b635a]">{body}</p>
+                    </div>
+                  </StaggerItem>
+                ))}
+              </Stagger>
             </div>
           </section>
 
@@ -960,7 +1091,7 @@ export default function Home() {
             <FadeIn>
               <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 rounded-3xl border border-black/[0.06] bg-white px-6 py-12 text-center shadow-[0_22px_70px_rgba(42,38,34,0.08)] sm:px-12">
                 <Mail className="size-8 text-[#b6a06a]" strokeWidth={1.25} />
-                <h2 className="font-serif text-3xl font-medium tracking-[0.04em]">Join the Maison list</h2>
+                <h2 className="font-serif text-3xl font-medium tracking-[0.04em]">Join the Gloria Beddings list</h2>
                 <p className="max-w-xl text-sm leading-relaxed text-[#6b635a]">Private launches, care guides, and styling notes—no clutter, one elegant note per week.</p>
                 <form
                   className="flex w-full max-w-md flex-col gap-3 sm:flex-row"
@@ -1023,7 +1154,7 @@ export default function Home() {
                       type="button"
                       className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#2a2622] px-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#faf8f5] transition hover:bg-black"
                       onClick={() => {
-                        setCartCount((c) => c + 1);
+                        addToCart(quickView);
                         setQuickView(null);
                       }}
                     >
@@ -1040,10 +1171,131 @@ export default function Home() {
         </Dialog.Portal>
       </Dialog.Root>
 
+      <Dialog.Root open={cartOpen} onOpenChange={setCartOpen}>
+        <AnimatePresence>
+          {cartOpen ? (
+            <Dialog.Portal forceMount>
+              <Dialog.Overlay asChild forceMount>
+                <motion.div
+                  className="fixed inset-0 z-[90] bg-black/45"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduce ? 0 : 0.22, ease: "easeOut" }}
+                />
+              </Dialog.Overlay>
+              <Dialog.Content asChild forceMount>
+                <motion.div
+                  className="fixed right-0 top-0 z-[100] flex h-dvh w-[min(100vw,28rem)] flex-col bg-[#faf8f5] shadow-2xl outline-none"
+                  initial={{ x: "100%" }}
+                  animate={{ x: 0 }}
+                  exit={{ x: "100%" }}
+                  transition={{ duration: reduce ? 0 : 0.34, ease: [0.22, 1, 0.36, 1] }}
+                >
+            <div className="flex items-center justify-between gap-4 border-b border-black/[0.08] px-5 py-4">
+              <div>
+                <Dialog.Title className="font-serif text-2xl font-medium tracking-[0.03em]">Your cart</Dialog.Title>
+                <Dialog.Description className="mt-1 text-xs uppercase tracking-[0.18em] text-[#8a8076]">
+                  {cartCount > 0 ? `${cartCount} ${cartCount === 1 ? "item" : "items"}` : "No item added"}
+                </Dialog.Description>
+              </div>
+              <Dialog.Close className="grid size-10 place-items-center rounded-full border border-black/[0.08] text-[#2a2622] transition hover:bg-black/[0.04]" aria-label="Close cart">
+                <X className="size-[18px]" />
+              </Dialog.Close>
+            </div>
+
+            {cartItems.length > 0 ? (
+              <>
+                <div className="flex-1 overflow-y-auto px-5 py-5">
+                  <ul className="space-y-5">
+                    {cartItems.map((item) => (
+                      <li key={item.id} className="grid grid-cols-[5.75rem_1fr] gap-4 border-b border-black/[0.06] pb-5 last:border-b-0">
+                        <div className="relative aspect-square overflow-hidden rounded-lg bg-[#ece7df]">
+                          <Image src={u(item.imageId, 400)} alt={item.name} fill className="object-cover" sizes="92px" />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <p className="font-serif text-base font-medium leading-snug text-[#2a2622]">{item.name}</p>
+                              <p className="mt-1 text-sm font-semibold text-[#2a2622]">{formatRupee(item.price)}</p>
+                            </div>
+                            <button
+                              type="button"
+                              className="grid size-8 shrink-0 place-items-center rounded-full text-[#8a8076] transition hover:bg-black/[0.04] hover:text-[#2a2622]"
+                              aria-label={`Remove ${item.name}`}
+                              onClick={() => updateCartQuantity(item.id, 0)}
+                            >
+                              <Trash2 className="size-4" strokeWidth={1.5} />
+                            </button>
+                          </div>
+                          <div className="mt-4 flex items-center justify-between gap-3">
+                            <div className="inline-flex h-10 items-center overflow-hidden rounded-full border border-black/[0.1] bg-white">
+                              <button
+                                type="button"
+                                className="grid size-10 place-items-center text-[#2a2622] transition hover:bg-black/[0.04]"
+                                aria-label={`Decrease quantity for ${item.name}`}
+                                onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
+                              >
+                                <Minus className="size-3.5" strokeWidth={1.8} />
+                              </button>
+                              <span className="min-w-8 text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
+                              <button
+                                type="button"
+                                className="grid size-10 place-items-center text-[#2a2622] transition hover:bg-black/[0.04]"
+                                aria-label={`Increase quantity for ${item.name}`}
+                                onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
+                              >
+                                <Plus className="size-3.5" strokeWidth={1.8} />
+                              </button>
+                            </div>
+                            <p className="text-sm font-semibold text-[#2a2622]">{formatRupee(item.price * item.quantity)}</p>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="border-t border-black/[0.08] bg-white px-5 py-5">
+                  <div className="flex items-center justify-between gap-4 text-sm">
+                    <span className="font-semibold uppercase tracking-[0.18em] text-[#6b635a]">Subtotal</span>
+                    <span className="text-xl font-semibold text-[#2a2622]">{formatRupee(cartSubtotal)}</span>
+                  </div>
+                  <p className="mt-2 text-xs leading-relaxed text-[#8a8076]">Shipping and taxes are calculated at checkout.</p>
+                  <button
+                    type="button"
+                    className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#2a2622] px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black"
+                  >
+                    Checkout
+                  </button>
+                  <Dialog.Close className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-black/[0.12] px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#2a2622] transition hover:bg-black/[0.04]">
+                    Continue shopping
+                  </Dialog.Close>
+                </div>
+              </>
+            ) : (
+              <div className="flex flex-1 flex-col items-center justify-center px-8 py-12 text-center">
+                <span className="grid size-16 place-items-center rounded-full bg-white text-[#b6a06a] shadow-sm ring-1 ring-black/[0.06]">
+                  <ShoppingBag className="size-7" strokeWidth={1.4} />
+                </span>
+                <p className="mt-6 font-serif text-2xl font-medium">No item added</p>
+                <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#6b635a]">Your cart is ready for sheets, quilts, pillows, and calm little home upgrades.</p>
+                <Dialog.Close className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-[#2a2622] px-8 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black">
+                  Start shopping
+                </Dialog.Close>
+              </div>
+            )}
+                </motion.div>
+              </Dialog.Content>
+            </Dialog.Portal>
+          ) : null}
+        </AnimatePresence>
+      </Dialog.Root>
+
       <footer className="bg-[#221e1a] px-4 py-16 text-[#f5f0e8] sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="lg:col-span-4">
-            <p className="font-serif text-3xl tracking-[0.06em]">Maison Loom</p>
+            <p className="font-serif text-3xl tracking-[0.06em]">Gloria Beddings</p>
             <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#d8d0c6]/85">
               Luxury home textiles for calmer bedrooms, softer sofas, and windows that glow at golden hour—rooted in Panipat.
             </p>
@@ -1077,14 +1329,14 @@ export default function Home() {
               </a>
             </p>
             <p className="mt-1 text-sm text-[#d8d0c6]/85">
-              <a href="mailto:hello@maisonloom.com" className="transition hover:text-white">
-                hello@maisonloom.com
+              <a href="mailto:hello@gloriabeddings.com" className="transition hover:text-white">
+                hello@gloriabeddings.com
               </a>
             </p>
           </div>
         </div>
         <div className="mx-auto mt-14 flex max-w-7xl flex-col gap-4 border-t border-white/10 pt-8 text-xs text-[#d8d0c6]/55 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Maison Loom. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Gloria Beddings. All rights reserved.</p>
           <p className="font-medium tracking-[0.12em] text-[#d8d0c6]/65">UPI · RuPay · Visa · Mastercard</p>
         </div>
       </footer>
@@ -1115,7 +1367,7 @@ function ProductCard({ product, onQuickView, onAddToCart }: { product: Product; 
         </button>
       </div>
       <div className="flex flex-1 flex-col p-5">
-        <h3 className="font-serif text-lg font-medium leading-snug">{product.name}</h3>
+        <h3 className="min-h-[3.2rem] font-serif text-lg font-medium leading-snug">{product.name}</h3>
         <div className="mt-2 flex items-center gap-2">
           <StarRow value={product.rating} />
           <span className="text-xs text-[#6b635a]">
@@ -1128,7 +1380,7 @@ function ProductCard({ product, onQuickView, onAddToCart }: { product: Product; 
             <span className="text-sm text-[#a89886] line-through">{formatRupee(product.compareAt)}</span>
           ) : null}
         </div>
-        <div className="mt-5 flex gap-2">
+        <div className="mt-auto flex gap-2 pt-5">
           <button
             type="button"
             onClick={onAddToCart}
