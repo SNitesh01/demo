@@ -982,14 +982,11 @@ export default function Home() {
 
           <section className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
             <div className="mx-auto max-w-7xl">
-              <FadeIn className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
+              <FadeIn className="text-center">
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Window to bedroom</p>
-                  <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">The Art of Light & Privacy</h2>
+                  <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Light, Layers & Quiet Privacy</h2>
                 </div>
-                <p className="max-w-xl text-sm leading-relaxed text-[#6b635a]">
-                  Slow, tactile moments for curtains and bedding that shape daylight, privacy, and the way a room settles.
-                </p>
               </FadeIn>
               <Stagger className="mt-10 grid gap-6 lg:grid-cols-3">
                 {lightPrivacyStories.map((story) => (
