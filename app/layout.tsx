@@ -1,18 +1,25 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 
-const poppins = Poppins({
+const display = Cormorant_Garamond({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-poppins",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
+});
+
+const sans = DM_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Annu Brand Connection | Learn, Connect, Grow, Earn",
+  title: "Maison Loom | Luxury Bed & Home Textiles",
   description:
-    "Creator and influencer growth platform for training, content creation, brand connections, and paid collaboration guidance.",
+    "Premium bedding, pillows, comforters, and home textiles—crafted for softness, longevity, and quiet luxury.",
 };
 
 export default function RootLayout({
@@ -21,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${poppins.variable} h-full antialiased`}>
-      <body className="min-h-full">{children}</body>
+    <html lang="en" className={`${display.variable} ${sans.variable} h-full antialiased`}>
+      <body className="min-h-full font-sans">{children}</body>
     </html>
   );
 }
