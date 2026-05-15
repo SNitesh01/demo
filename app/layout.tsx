@@ -19,7 +19,7 @@ const sans = DM_Sans({
 export const metadata: Metadata = {
   title: "Maison Loom | Luxury Bed & Home Textiles",
   description:
-    "Premium bedding, pillows, comforters, and home textiles—crafted for softness, longevity, and quiet luxury.",
+    "Premium bedding, pillows, comforters, and home textiles crafted for softness, longevity, and quiet luxury.",
 };
 
 export default function RootLayout({
