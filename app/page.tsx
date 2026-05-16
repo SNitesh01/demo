@@ -1,1165 +1,1168 @@
 "use client";
 
 import * as Dialog from "@radix-ui/react-dialog";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import {
   ArrowRight,
-  Camera,
-  ChevronDown,
+  Award,
+  Check,
   ChevronLeft,
   ChevronRight,
-  Heart,
-  LayoutGrid,
-  Link2,
-  Mail,
   Menu,
-  Minus,
-  Plus,
+  Moon,
   Search,
-  Shield,
+  ShieldCheck,
   ShoppingBag,
-  SlidersHorizontal,
   Sparkles,
   Star,
-  Trash2,
-  Undo2,
-  User,
+  Truck,
   X,
 } from "lucide-react";
-import { useId, useLayoutEffect, useRef, useState } from "react";
-import "swiper/css";
-import "swiper/css/pagination";
-import type { Swiper as SwiperClass } from "swiper";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { useMemo, useRef, useState } from "react";
 
-/** Unsplash IDs verified reachable with `?w=&q=` (avoid legacy crop URLs that 404). */
 const P = {
-  hero: "1600585154340-be6161a56a0c",
-  bedroom: "1505693416388-ac5ce068fe85",
-  living: "1540574163026-643ea20ade25",
-  fabric: "1615876234886-fd9a39fda97f",
-  sofa: "1555041469-a586c61ea9bc",
-  interiorA: "1616486338812-3dadae4b4ace",
-  interiorB: "1615529328331-f8917597711f",
+  hero: "1616627561839-074385245ff6",
+  bedroom: "1617325247661-675ab4b64ae2",
+  bedding: "1600585154340-be6161a56a0c",
+  comforter: "1505693416388-ac5ce068fe85",
+  curtains: "1616486338812-3dadae4b4ace",
+  cushion: "1615876234886-fd9a39fda97f",
   bath: "1582719478250-c89cae4dc85b",
+  weave: "1615529328331-f8917597711f",
+  neutral: "1519710164239-da123dc03ef4",
+  sofa: "1555041469-a586c61ea9bc",
   dining: "1578662996442-48f60103fc96",
-  warmRoom: "1519710164239-da123dc03ef4",
+  linen: "1540574163026-643ea20ade25",
 } as const;
 
-function u(id: string, w: number) {
-  return `https://images.unsplash.com/photo-${id}?w=${w}&q=80`;
+function img(id: string, width = 1400) {
+  return `https://images.unsplash.com/photo-${id}?w=${width}&q=82&auto=format&fit=crop`;
 }
 
-/** Replace FILM_SRC with your own textile / bedding clip when ready. */
-const FILM_POSTER = u(P.fabric, 1600);
-const FILM_SRC = "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-
-const lightPrivacyStories = [
-  {
-    title: "Sheers that soften daylight",
-    body: "Airy curtain layers filter glare while keeping rooms bright, gentle, and lived-in.",
-    cta: "Shop curtains",
-    href: "#bestsellers",
-    poster: u(P.interiorA, 1200),
-    video: "https://videos.pexels.com/video-files/854116/854116-hd_1920_1080_25fps.mp4",
-  },
-  {
-    title: "Bedding with quiet movement",
-    body: "White sheets and layered duvets settle into a crisp, hotel-fresh finish.",
-    cta: "Build your bed",
-    href: "#featured",
-    poster: u(P.bedroom, 1200),
-    video: "https://videos.pexels.com/video-files/10555331/10555331-uhd_4096_2160_25fps.mp4",
-  },
-  {
-    title: "Privacy for golden hour",
-    body: "Soft panels create a calm screen for evenings without losing the glow.",
-    cta: "View panels",
-    href: "#bestsellers",
-    poster: u(P.interiorB, 1200),
-    video: "https://www.pexels.com/download/video/7945783/",
-  },
-] as const;
+type CategoryKey =
+  | "Bedding Sets"
+  | "Comforters"
+  | "Curtains"
+  | "Cushions"
+  | "Towels"
+  | "Throws"
+  | "Sofa Covers"
+  | "Bath Linens";
 
 type Product = {
   id: string;
+  category: CategoryKey;
   name: string;
   price: number;
   compareAt?: number;
-  rating: number;
-  reviewCount: number;
+  tone: string;
   imageId: string;
-  badge?: "Sale" | "New" | "Limited";
-  blurb: string;
+  badge?: string;
+  rating: number;
+  reviews: number;
+  detail: string;
 };
 
-type CartItem = Product & {
-  quantity: number;
-};
-
-function productHref(label: string) {
-  const slug = label
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-  return `#product-${slug}`;
-}
-
-const productsMegaMenu = [
+const categories: Array<{
+  key: CategoryKey;
+  title: string;
+  kicker: string;
+  imageId: string;
+  description: string;
+}> = [
   {
-    title: "Shop by collection",
-    Icon: LayoutGrid,
-    links: ["All products", "New arrivals", "Best sellers", "Featured picks", "Limited runs"],
+    key: "Bedding Sets",
+    title: "Coordinated bedding sets",
+    kicker: "Sleep-ready layers",
+    imageId: P.bedding,
+    description: "Complete sheet, sham, and coverlet edits for hotel-polished bedrooms.",
   },
   {
-    title: "Bedding",
-    Icon: Heart,
-    links: ["Bedsheets", "Pillows", "Comforters", "Blankets", "Quilts & coverlets"],
+    key: "Comforters",
+    title: "Airy comforters",
+    kicker: "Cloud-soft warmth",
+    imageId: P.comforter,
+    description: "Balanced fills and cotton shells that feel lofty without trapping heat.",
   },
   {
-    title: "Living & bath",
-    Icon: Sparkles,
-    links: ["Sofa covers", "Throws", "Towels", "Bath linens"],
+    key: "Curtains",
+    title: "Tailored curtains",
+    kicker: "Light and privacy",
+    imageId: P.curtains,
+    description: "Sheer, room-darkening, and blackout panels cut for calmer daylight.",
   },
   {
-    title: "Windows & light",
-    Icon: SlidersHorizontal,
-    links: ["Curtains & drapes", "Sheers", "Blackout panels", "Room darkening", "Hardware & tiebacks"],
-  },
-] as const;
-
-/** Main header nav labels (not mega panel). Links keep original sizing; button gets the same classes + UA resets. */
-const primaryNavLinkClass =
-  "rounded-lg px-3 py-2 font-sans text-[11px] font-semibold uppercase tracking-[0.2em] text-[#5c534a] transition hover:bg-black/[0.04] hover:text-[#2a2622]";
-
-const primaryNavMenuButtonClass = `${primaryNavLinkClass} inline-flex items-center gap-1.5 border-0 bg-transparent m-0 cursor-pointer appearance-none shadow-none outline-none ring-[#b6a06a]/0 focus-visible:ring-2 group-hover/products:bg-black/[0.04] group-hover/products:text-[#2a2622] group-focus-within/products:bg-black/[0.04] group-focus-within/products:text-[#2a2622]`;
-
-/** Same grid as main sections: outer gutters, then `max-w-7xl` (no double horizontal padding). */
-const pageGutterClass = "px-4 sm:px-6 lg:px-8";
-const pageInnerClass = "mx-auto max-w-7xl";
-
-const categories = [
-  { label: "Bedsheets", id: P.bedroom, href: "#featured" },
-  { label: "Pillows", id: P.fabric, href: "#featured" },
-  { label: "Comforters", id: P.warmRoom, href: "#featured" },
-  { label: "Sofa Covers", id: P.sofa, href: "#bestsellers" },
-  { label: "Towels", id: P.bath, href: "#new" },
-  { label: "Curtains", id: P.interiorA, href: "#bestsellers" },
-  { label: "Blankets", id: P.living, href: "#new" },
-] as const;
-
-const whyUs = [
-  {
-    title: "Premium fabrics",
-    body: "Long-staple cotton, European linen, and brushed layers chosen for hand-feel and drape.",
-    Icon: Sparkles,
+    key: "Cushions",
+    title: "Cushions and covers",
+    kicker: "Sofa finishing",
+    imageId: P.cushion,
+    description: "Textured accents, quiet colors, and tactile details for finished rooms.",
   },
   {
-    title: "Designed for comfort",
-    body: "Breathable weaves and weight-balanced fills for sleep that feels quietly indulgent.",
-    Icon: Heart,
-  },
-  {
-    title: "Built to last",
-    body: "Reinforced seams, color-true dyes, and finishes that survive real laundry cycles.",
-    Icon: Shield,
-  },
-  {
-    title: "Easy returns",
-    body: "30-night bedding trial on select sets, plus simple exchanges if the tone is not quite right.",
-    Icon: Undo2,
-  },
-] as const;
-
-const featured: Product[] = [
-  {
-    id: "f1",
-    name: "Sable Sateen Sheet Set",
-    price: 13999,
-    compareAt: 18999,
-    rating: 4.9,
-    reviewCount: 312,
-    imageId: P.bedroom,
-    badge: "Sale",
-    blurb: "Cool-touch sateen with a luminous matte sheen—hotel weight, home softness.",
-  },
-  {
-    id: "f2",
-    name: "Gloria Beddings Down Alternative Pillow",
-    price: 7999,
-    rating: 4.8,
-    reviewCount: 186,
-    imageId: P.fabric,
-    badge: "New",
-    blurb: "Lofty microfiber fill with a cotton sateen shell—supportive without the crunch.",
-  },
-  {
-    id: "f3",
-    name: "Gloria Beddings Weighted Quilt",
-    price: 20499,
-    compareAt: 24699,
-    rating: 4.7,
-    reviewCount: 94,
-    imageId: P.warmRoom,
-    badge: "Sale",
-    blurb: "Channel-stitched layers for even warmth—reads minimal, feels substantial.",
-  },
-  {
-    id: "f4",
-    name: "Tailored Sofa Throw",
-    price: 16499,
-    rating: 4.6,
-    reviewCount: 142,
-    imageId: P.sofa,
-    badge: "Limited",
-    blurb: "Protective coverage that drapes like styling—soft neutral pile, quiet hardware.",
-  },
-];
-
-const newArrivals: Product[] = [
-  {
-    id: "n1",
-    name: "Ivory Waffle Towel Set",
-    price: 6999,
-    compareAt: 8999,
-    rating: 4.8,
-    reviewCount: 56,
+    key: "Towels",
+    title: "Spa-soft towels",
+    kicker: "Bath ritual",
     imageId: P.bath,
-    badge: "New",
-    blurb: "Spa-weight waffle with quick-dry loft—edges bound in tonal cotton.",
+    description: "Plush, absorbent towels for everyday bathing with a calm hotel feel.",
   },
   {
-    id: "n2",
-    name: "Linen Curtain Panel",
-    price: 10299,
-    rating: 4.7,
-    reviewCount: 73,
-    imageId: P.interiorA,
-    blurb: "Rippled light control with a dry hand—dyed in small batches for depth.",
+    key: "Throws",
+    title: "Layered throws",
+    kicker: "Quiet warmth",
+    imageId: P.neutral,
+    description: "Light sofa and bed layers that add softness without visual heaviness.",
   },
   {
-    id: "n3",
-    name: "Cashmere-Blend Throw",
-    price: 14799,
-    compareAt: 17499,
-    rating: 4.9,
-    reviewCount: 41,
-    imageId: P.living,
-    badge: "Sale",
-    blurb: "Featherlight warmth for sofas and beds—fringe-free, modern hem.",
+    key: "Sofa Covers",
+    title: "Tailored sofa covers",
+    kicker: "Living room polish",
+    imageId: P.sofa,
+    description: "Protective covers with a styled drape for refreshed living spaces.",
   },
   {
-    id: "n4",
-    name: "Mattress Protector",
-    price: 9299,
-    rating: 4.5,
-    reviewCount: 128,
-    imageId: P.bedroom,
-    blurb: "Quiet waterproof membrane with a cotton terry face—no crinkle, no heat trap.",
+    key: "Bath Linens",
+    title: "Bath linen edits",
+    kicker: "Clean comfort",
+    imageId: P.linen,
+    description: "Coordinated towels and textured bath layers for a finished suite.",
   },
 ];
 
-const bestSellers: Product[] = [
+const products: Product[] = [
   {
-    id: "b1",
-    name: "Gloria Beddings Everyday Duvet",
-    price: 22199,
-    compareAt: 26499,
-    rating: 4.9,
-    reviewCount: 402,
-    imageId: P.warmRoom,
-    badge: "Sale",
-    blurb: "Baffle-box construction with responsibly sourced down alternative.",
-  },
-  {
-    id: "b2",
-    name: "European Linen Sham Pair",
+    id: "sheet-cloudtouch-latte",
+    category: "Bedding Sets",
+    name: "CloudTouch 8-piece Bedding Set",
     price: 5999,
+    compareAt: 11999,
+    tone: "Latte Creme",
+    imageId: P.bedroom,
+    badge: "Bestseller",
+    rating: 4.9,
+    reviews: 418,
+    detail: "A coordinated sheet, duvet, pillow, and cushion set with a cool sateen hand.",
+  },
+  {
+    id: "sheet-cocoon-blue",
+    category: "Bedding Sets",
+    name: "Cocoon Complete Bed Edit",
+    price: 6499,
+    compareAt: 11999,
+    tone: "Blue Meadow",
+    imageId: P.neutral,
+    badge: "New",
     rating: 4.8,
-    reviewCount: 221,
-    imageId: P.fabric,
-    blurb: "Relaxed weave that softens with every wash—mother-of-pearl buttons.",
+    reviews: 136,
+    detail: "Soft washed cotton layers arranged for easy styling and everyday laundering.",
   },
   {
-    id: "b3",
-    name: "Velvet Curtain Pair",
-    price: 16499,
-    compareAt: 19999,
+    id: "comforter-mulberry",
+    category: "Comforters",
+    name: "CloudTouch AC Comforter Set",
+    price: 4999,
+    compareAt: 10000,
+    tone: "Mulberry",
+    imageId: P.comforter,
+    badge: "Save 50%",
+    rating: 4.9,
+    reviews: 272,
+    detail: "Oversized, breathable comforter with two pillow covers and two cushion covers.",
+  },
+  {
+    id: "comforter-morning",
+    category: "Comforters",
+    name: "Light Season Comforter",
+    price: 4299,
+    compareAt: 8499,
+    tone: "Morning Glory",
+    imageId: P.hero,
     rating: 4.7,
-    reviewCount: 167,
-    imageId: P.interiorB,
-    badge: "Sale",
-    blurb: "Low-sheen pile that reads rich at night, calm by day.",
+    reviews: 98,
+    detail: "A light, lofty layer for warm nights and air-conditioned bedrooms.",
   },
   {
-    id: "b4",
-    name: "Cushion Cover Set (4)",
-    price: 5299,
+    id: "curtain-eudora-oat",
+    category: "Curtains",
+    name: "Eudora Jacquard Curtain Pair",
+    price: 2699,
+    compareAt: 5620,
+    tone: "Oatleaf",
+    imageId: P.curtains,
+    badge: "Custom",
+    rating: 4.8,
+    reviews: 205,
+    detail: "Room-darkening jacquard panels with custom length, lining, and header options.",
+  },
+  {
+    id: "curtain-amore-white",
+    category: "Curtains",
+    name: "Amore Cotton Curtain Pair",
+    price: 3109,
+    compareAt: 5840,
+    tone: "Off White",
+    imageId: P.weave,
+    rating: 4.7,
+    reviews: 151,
+    detail: "Plain cotton curtains for soft privacy, clean lines, and warm daylight.",
+  },
+  {
+    id: "cushion-velvet-blush",
+    category: "Cushions",
+    name: "Velvet Cushion Cover Set",
+    price: 1899,
+    compareAt: 2999,
+    tone: "Deep Blush",
+    imageId: P.sofa,
+    badge: "Set of 4",
     rating: 4.6,
-    reviewCount: 305,
+    reviews: 184,
+    detail: "Low-sheen velvet covers with hidden zippers and a rich, soft pile.",
+  },
+  {
+    id: "cushion-jacquard-stone",
+    category: "Cushions",
+    name: "Pebble Jacquard Cushion Pair",
+    price: 1599,
+    tone: "Stone",
     imageId: P.dining,
-    blurb: "Hidden zipper, knife-edge tailoring—mixes with every palette.",
+    rating: 4.8,
+    reviews: 74,
+    detail: "Textured jacquard cushions that add dimension without visual noise.",
+  },
+  {
+    id: "towel-waffle-ivory",
+    category: "Towels",
+    name: "Ivory Waffle Towel Stack",
+    price: 2299,
+    compareAt: 3599,
+    tone: "Ivory",
+    imageId: P.bath,
+    badge: "Bath edit",
+    rating: 4.8,
+    reviews: 92,
+    detail: "Quick-dry waffle towels with a soft hand and spa-inspired texture.",
+  },
+  {
+    id: "throw-cashmere-oat",
+    category: "Throws",
+    name: "Oat Cloud Throw",
+    price: 2799,
+    compareAt: 4199,
+    tone: "Warm Oat",
+    imageId: P.neutral,
+    rating: 4.7,
+    reviews: 67,
+    detail: "A light decorative throw for sofas, beds, and quiet reading corners.",
+  },
+  {
+    id: "sofa-cover-stone",
+    category: "Sofa Covers",
+    name: "Stone Tailored Sofa Cover",
+    price: 3899,
+    compareAt: 5999,
+    tone: "Stone",
+    imageId: P.sofa,
+    badge: "Living",
+    rating: 4.6,
+    reviews: 118,
+    detail: "Soft protective coverage with a clean drape and neutral living-room finish.",
+  },
+  {
+    id: "bath-linen-suite",
+    category: "Bath Linens",
+    name: "Bath Linen Suite",
+    price: 3299,
+    tone: "Cloud White",
+    imageId: P.linen,
+    rating: 4.8,
+    reviews: 54,
+    detail: "A coordinated bath linen edit for a fresh, composed bathroom shelf.",
   },
 ];
 
-const testimonials = [
+const benefits = [
+  { label: "Free shipping above Rs. 999", Icon: Truck },
+  { label: "Custom curtain sizing", Icon: Check },
+  { label: "Soft cotton-rich fabrics", Icon: Sparkles },
+  { label: "Easy exchanges", Icon: ShieldCheck },
+];
+
+const storyStats = [
+  ["4.8/5", "average product rating"],
+  ["100+", "curated colors and textures"],
+  ["7 day", "exchange support"],
+];
+
+const roomGuides = [
+  {
+    title: "Bedroom refresh",
+    body: "Start with a complete bedding set, add a comforter by season, then finish with two tonal cushions.",
+    imageId: P.bedroom,
+    video:
+      "https://videos.pexels.com/video-files/6319254/6319254-uhd_2560_1440_25fps.mp4",
+  },
+  {
+    title: "Window softness",
+    body: "Use sheers for glow, room-darkening panels for privacy, and blackout lining where sleep matters most.",
+    imageId: P.curtains,
+    video:
+      "https://videos.pexels.com/video-files/854116/854116-hd_1920_1080_25fps.mp4",
+  },
+  {
+    title: "Living room texture",
+    body: "Layer cushions in velvet, jacquard, and cotton-rich textures to make sofas feel intentional.",
+    imageId: P.sofa,
+    video:
+      "https://videos.pexels.com/video-files/7578552/7578552-uhd_2560_1440_30fps.mp4",
+  },
+];
+
+const categoryHighlights = [
+  ["Bedding Sets", "Coordinated sets for full-room upgrades", "Sateen, cotton-rich, washed textures"],
+  ["Comforters", "Lightweight, AC-friendly, and oversized", "CloudTouch fills and breathable shells"],
+  ["Curtains", "Customizable privacy and light control", "Sheer, blackout, jacquard, cotton"],
+  ["Cushions", "Small accents with a finished designer feel", "Velvet, jacquard, solids, textured weaves"],
+  ["Towels", "Spa softness for everyday bath rituals", "Waffle, terry, and quick-dry textures"],
+  ["Throws", "Light layers for beds and sofas", "Brushed cotton and soft neutral weaves"],
+  ["Sofa Covers", "Protective layers with polished drape", "Neutral covers for refreshed living rooms"],
+  ["Bath Linens", "Coordinated bathroom softness", "Towels, hand towels, and bath accents"],
+];
+
+const popularClasses: Array<{
+  title: string;
+  category: CategoryKey;
+  count: string;
+  imageId: string;
+  note: string;
+}> = [
+  {
+    title: "Complete bed sets",
+    category: "Bedding Sets",
+    count: "24 styles",
+    imageId: P.bedding,
+    note: "Sheets, shams, covers, and cushions styled as one finished room.",
+  },
+  {
+    title: "AC comforters",
+    category: "Comforters",
+    count: "18 styles",
+    imageId: P.comforter,
+    note: "Lightweight warmth for air-conditioned bedrooms and changing seasons.",
+  },
+  {
+    title: "Custom curtains",
+    category: "Curtains",
+    count: "32 styles",
+    imageId: P.curtains,
+    note: "Sheer, blackout, and room-darkening panels for every light level.",
+  },
+  {
+    title: "Decor cushions",
+    category: "Cushions",
+    count: "40 styles",
+    imageId: P.cushion,
+    note: "Velvet, jacquard, and cotton textures for sofa and bed finishing.",
+  },
+  {
+    title: "Bath towel stacks",
+    category: "Towels",
+    count: "16 styles",
+    imageId: P.bath,
+    note: "Plush and waffle textures for an everyday spa-like routine.",
+  },
+  {
+    title: "Sofa refresh covers",
+    category: "Sofa Covers",
+    count: "12 styles",
+    imageId: P.sofa,
+    note: "Protective, tailored layers that make living rooms feel newly styled.",
+  },
+];
+
+const colorStories = [
+  {
+    name: "Cloud White",
+    hex: "#f7f1e8",
+    imageId: P.bedding,
+    note: "Clean hotel calm for bedding sets and bath linens.",
+  },
+  {
+    name: "Warm Oat",
+    hex: "#c9b79d",
+    imageId: P.neutral,
+    note: "Soft neutral warmth for throws, curtains, and comforters.",
+  },
+  {
+    name: "Sage Mist",
+    hex: "#a8ad9a",
+    imageId: P.curtains,
+    note: "A quiet green-grey tone for relaxed window styling.",
+  },
+  {
+    name: "Mulberry",
+    hex: "#8b4d58",
+    imageId: P.comforter,
+    note: "A deeper accent shade for cushions and seasonal layers.",
+  },
+  {
+    name: "Stone",
+    hex: "#8d877d",
+    imageId: P.sofa,
+    note: "Grounded texture for sofa covers and everyday living rooms.",
+  },
+  {
+    name: "Blue Meadow",
+    hex: "#7d92a6",
+    imageId: P.bedroom,
+    note: "Cool softness for bedrooms that need a lighter mood.",
+  },
+];
+
+const whyGloria = [
+  {
+    title: "Category-first home styling",
+    body: "Bedding, curtains, cushions, throws, towels, and bath linens are organized around real room needs.",
+    Icon: Sparkles,
+  },
+  {
+    title: "Soft fabrics with structure",
+    body: "Cotton-rich textures, smooth sateen finishes, and balanced fills are chosen for daily comfort and lasting shape.",
+    Icon: Award,
+  },
+  {
+    title: "Elegant, usable color stories",
+    body: "Warm neutrals, soft whites, sage, stone, blue, and mulberry tones make it easier to style a complete room.",
+    Icon: Moon,
+  },
+  {
+    title: "Made for Indian homes",
+    body: "Lightweight comforters, practical curtain options, and easy-care layers suit changing seasons and everyday use.",
+    Icon: ShieldCheck,
+  },
+];
+
+const customerReviews = [
   {
     quote:
-      "The sateen sheets feel like five-star bedding but warmer—no synthetic shine, just calm drape.",
-    name: "Elena M.",
-    city: "Mumbai",
+      "The bedding feels soft without looking casual. It made the whole bedroom feel calmer the first night we used it.",
+    name: "Ananya R.",
+    location: "Delhi NCR",
+    product: "CloudTouch Bedding Set",
   },
   {
-    quote: "Finally curtains that photograph true to tone. The sage reads sage, not grey.",
-    name: "Jordan P.",
-    city: "Bengaluru",
+    quote:
+      "The curtains fall beautifully and the color is exactly the kind of muted tone I wanted for our living room.",
+    name: "Meera S.",
+    location: "Bengaluru",
+    product: "Eudora Curtain Pair",
   },
   {
-    quote: "Returns were painless when the quilt was heavier than I expected. The exchange team was lovely.",
-    name: "Amira K.",
-    city: "Delhi NCR",
+    quote:
+      "The cushions and throw gave our sofa a finished designer look without making the room feel overdone.",
+    name: "Ritika M.",
+    location: "Mumbai",
+    product: "Decor Cushion Edit",
   },
 ];
 
-function formatRupee(n: number) {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(n);
+function rupee(value: number) {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
 }
 
-function StarRow({ value }: { value: number }) {
-  const clamped = Math.min(5, Math.max(0, value));
+function Rating({ value, count }: { value: number; count: number }) {
   return (
-    <div className="flex items-center gap-0.5 text-[#b6a06a]" aria-label={`${value} out of 5 stars`}>
-      {Array.from({ length: 5 }).map((_, i) => {
-        const diff = clamped - i;
-        if (diff >= 1) {
-          return <Star key={i} className="size-3.5 fill-current" strokeWidth={1.25} />;
-        }
-        if (diff >= 0.35) {
-          return <Star key={i} className="size-3.5 fill-current opacity-50" strokeWidth={1.25} />;
-        }
-        return <Star key={i} className="size-3.5 fill-none opacity-35" strokeWidth={1.25} />;
-      })}
-    </div>
-  );
-}
-
-function FadeIn({ children, className, delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 28 }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.12 }}
-      transition={{ duration: reduce ? 0 : 0.55, delay: reduce ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function Stagger({ children, className }: { children: React.ReactNode; className?: string }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : "hidden"}
-      whileInView={reduce ? undefined : "show"}
-      viewport={{ once: true, amount: 0.2 }}
-      variants={
-        reduce
-          ? undefined
-          : {
-              hidden: { opacity: 0 },
-              show: {
-                opacity: 1,
-                transition: { staggerChildren: 0.08, delayChildren: 0.06 },
-              },
-            }
-      }
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
-  const reduce = useReducedMotion();
-  return (
-    <motion.div
-      className={className}
-      variants={
-        reduce
-          ? undefined
-          : {
-              hidden: { opacity: 0, y: 22 },
-              show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] } },
-            }
-      }
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-function ProductMegaPanel({ onPickLink }: { onPickLink?: () => void }) {
-  return (
-    <div className="rounded-2xl border border-black/[0.08] bg-[#faf8f5] p-5 shadow-[0_24px_80px_rgba(42,38,34,0.14)] ring-1 ring-black/[0.03] sm:p-6">
-      <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-4">
-        {productsMegaMenu.map(({ title, Icon, links }) => (
-          <div key={title} className="min-w-0">
-            <p className="flex items-center gap-2.5 border-b border-black/[0.06] pb-2.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2a2622]">
-              <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#ebe4d9] text-[#5c534a] shadow-inner shadow-white/40">
-                <Icon className="size-[18px]" strokeWidth={1.5} aria-hidden />
-              </span>
-              <span className="leading-tight">{title}</span>
-            </p>
-            <ul className="mt-3 space-y-0.5">
-              {links.map((label) => (
-                <li key={label}>
-                  <a
-                    href={productHref(label)}
-                    onClick={onPickLink}
-                    className="group/link flex items-center gap-2 rounded-lg py-1.5 pl-1 pr-2 text-[13px] leading-snug text-[#4a433c] transition hover:bg-[#ebe4d9]/60 hover:text-[#2a2622]"
-                  >
-                    <ArrowRight
-                      className="-translate-x-1 size-3 shrink-0 text-[#b6a06a] opacity-0 transition group-hover/link:translate-x-0 group-hover/link:opacity-100"
-                      strokeWidth={2}
-                      aria-hidden
-                    />
-                    <span>{label}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div className="flex items-center gap-2 text-xs text-[#6a6258]">
+      <span className="flex text-[#b58a46]" aria-label={`${value} out of 5 stars`}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star
+            key={i}
+            className={`size-3.5 ${i < Math.round(value) ? "fill-current" : "opacity-30"}`}
+            strokeWidth={1.3}
+          />
         ))}
-      </div>
+      </span>
+      <span>
+        {value.toFixed(1)} ({count})
+      </span>
     </div>
-  );
-}
-
-function ProductsMegaNav({ onPickLink }: { onPickLink?: () => void }) {
-  return (
-    <div className="group/products relative">
-      <button
-        type="button"
-        className={primaryNavMenuButtonClass}
-        aria-expanded="false"
-        aria-haspopup="true"
-      >
-        Products
-        <ChevronDown
-          className="size-3.5 shrink-0 text-[#8a8076] transition duration-300 group-hover/products:rotate-180 group-focus-within/products:rotate-180"
-          aria-hidden
-        />
-      </button>
-      <div className="pointer-events-none absolute left-1/2 top-full z-[100] w-screen max-w-[100vw] -translate-x-1/2 pt-1 opacity-0 transition duration-200 ease-out invisible group-hover/products:pointer-events-auto group-hover/products:visible group-hover/products:opacity-100 group-focus-within/products:pointer-events-auto group-focus-within/products:visible group-focus-within/products:opacity-100">
-      <div className={`${pageGutterClass} pt-1`}>
-        <div className={pageInnerClass}>
-          <ProductMegaPanel onPickLink={onPickLink} />
-        </div>
-      </div>
-      </div>
-    </div>
-  );
-}
-
-function MobileProductMega({ onNavigate }: { onNavigate: () => void }) {
-  return (
-    <div className="mt-2 max-h-[min(70vh,28rem)] overflow-y-auto rounded-xl border border-black/[0.08] bg-white/80 p-2">
-      {productsMegaMenu.map(({ title, Icon, links }) => (
-        <details key={title} className="group border-b border-black/[0.06] last:border-b-0">
-          <summary className="flex cursor-pointer list-none items-center gap-2.5 py-3 pl-2 pr-2 [&::-webkit-details-marker]:hidden">
-            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#ebe4d9] text-[#5c534a]">
-              <Icon className="size-[18px]" strokeWidth={1.5} aria-hidden />
-            </span>
-            <span className="flex-1 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2a2622]">{title}</span>
-            <ChevronDown className="size-4 shrink-0 text-[#8a8076] transition group-open:rotate-180" aria-hidden />
-          </summary>
-          <ul className="space-y-0.5 pb-3 pl-3">
-            {links.map((label) => (
-              <li key={label}>
-                <a
-                  href={productHref(label)}
-                  onClick={onNavigate}
-                  className="flex items-center gap-2 rounded-lg py-2 pl-10 pr-2 text-[13px] text-[#4a433c] hover:bg-black/[0.04] hover:text-[#2a2622]"
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </details>
-      ))}
-    </div>
-  );
-}
-
-function CategorySwiper() {
-  const uid = useId();
-  return (
-    <Swiper
-      modules={[Autoplay]}
-      autoplay={{ delay: 4000, disableOnInteraction: false }}
-      spaceBetween={16}
-      slidesPerView={1.15}
-      breakpoints={{
-        480: { slidesPerView: 2 },
-        768: { slidesPerView: 3 },
-        1024: { slidesPerView: 4 },
-        1280: { slidesPerView: 5 },
-      }}
-      className="category-swiper overflow-hidden"
-    >
-      {categories.map((c) => (
-        <SwiperSlide key={`${uid}-${c.label}`} className="!h-auto">
-          <a
-            href={c.href}
-            className="group flex flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_14px_40px_rgba(42,38,34,0.06)] transition hover:-translate-y-1 hover:shadow-[0_22px_60px_rgba(42,38,34,0.1)]"
-          >
-            <div className="relative aspect-[4/5] overflow-hidden">
-              <Image src={u(c.id, 900)} alt={c.label} fill className="object-cover transition duration-700 group-hover:scale-[1.04]" sizes="(max-width:768px) 70vw, 280px" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent opacity-80" />
-              <span className="absolute inset-x-0 bottom-0 px-3 pb-3 text-center font-serif text-base text-white drop-shadow sm:text-lg">{c.label}</span>
-            </div>
-          </a>
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  );
-}
-
-function ProductSwiper({
-  products,
-  onQuickView,
-  onAddToCart,
-}: {
-  products: Product[];
-  onQuickView: (p: Product) => void;
-  onAddToCart: (p: Product) => void;
-}) {
-  const uid = useId();
-  return (
-    <Swiper
-      modules={[Pagination]}
-      pagination={{ clickable: true, dynamicBullets: true }}
-      spaceBetween={20}
-      slidesPerView={1.08}
-      breakpoints={{
-        520: { slidesPerView: 1.35 },
-        640: { slidesPerView: 2 },
-        1024: { slidesPerView: 3 },
-        1280: { slidesPerView: 4 },
-      }}
-      className={`product-swiper overflow-hidden !pb-12 [&_.swiper-pagination-bullet-active]:bg-[#2a2622]`}
-    >
-      {products.map((p) => (
-        <SwiperSlide key={`${uid}-${p.id}`} className="!h-auto">
-          <ProductCard product={p} onQuickView={() => onQuickView(p)} onAddToCart={() => onAddToCart(p)} />
-        </SwiperSlide>
-      ))}
-    </Swiper>
-  );
-}
-
-const HERO_IMAGE_SLIDES = [
-  { id: P.hero, alt: "Sunlit living space with layered neutrals" },
-  { id: P.living, alt: "Welcoming living room with soft daylight" },
-  { id: P.warmRoom, alt: "Warm bedroom textiles and gentle light" },
-] as const;
-
-const heroSwiperClass =
-  "hero-swiper !absolute inset-0 z-0 h-full w-full [&_.swiper-slide]:h-full [&_.swiper-wrapper]:h-full";
-
-function HeroSection({ reduce, topChromeH }: { reduce: boolean; topChromeH: number }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const swiperRef = useRef<SwiperClass | null>(null);
-  const offset = topChromeH > 0 ? topChromeH : 104;
-
-  return (
-    <section
-      id="home"
-      style={{ height: `calc(100svh - ${offset}px)` }}
-      className="relative isolate min-h-[22rem] overflow-hidden bg-[#1a1612]"
-    >
-      <Swiper
-        modules={[Autoplay]}
-        speed={900}
-        rewind
-        autoplay={{ delay: 5500, disableOnInteraction: false }}
-        className={heroSwiperClass}
-        onSwiper={(swiper) => {
-          swiperRef.current = swiper;
-          swiper.autoplay.stop();
-        }}
-        onSlideChange={(swiper) => {
-          const v = videoRef.current;
-          if (swiper.activeIndex === 0) {
-            swiper.autoplay.stop();
-            if (v) {
-              v.currentTime = 0;
-              void v.play().catch(() => {});
-            }
-          } else {
-            v?.pause();
-            if (!swiper.autoplay.running) swiper.autoplay.start();
-          }
-        }}
-      >
-        <SwiperSlide>
-          <div className="relative h-full w-full">
-            <video
-              ref={videoRef}
-              className="h-full w-full object-cover"
-              poster={FILM_POSTER}
-              muted
-              playsInline
-              preload="metadata"
-              autoPlay
-              onEnded={() => {
-                const s = swiperRef.current;
-                if (!s || s.activeIndex !== 0) return;
-                s.slideNext();
-                s.autoplay.start();
-              }}
-            >
-              <source src={FILM_SRC} type="video/mp4" />
-            </video>
-          </div>
-        </SwiperSlide>
-        {HERO_IMAGE_SLIDES.map((slide, idx) => (
-          <SwiperSlide key={slide.id}>
-            <div className="relative h-full w-full">
-              <Image
-                src={u(slide.id, 2400)}
-                alt={slide.alt}
-                fill
-                priority={idx === 0}
-                className="object-cover"
-                sizes="100vw"
-              />
-              <div
-                className={
-                  reduce
-                    ? "pointer-events-none absolute inset-0 bg-black/40"
-                    : "pointer-events-none absolute inset-0 bg-black/[0.18] backdrop-blur-[3px]"
-                }
-                aria-hidden
-              />
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      <div className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/55 via-black/20 to-black/25" />
-      <div className="pointer-events-none absolute inset-0 z-[2] flex flex-col items-center justify-center px-6 py-16 text-center text-[#faf8f5]">
-        <motion.p
-          className="text-[11px] font-semibold uppercase tracking-[0.38em] text-[#f5f0e8]/90"
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={reduce ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Luxury textiles for restful rooms
-        </motion.p>
-        <motion.h1
-          className="mt-6 max-w-3xl font-serif text-[2.5rem] font-medium leading-[1.08] tracking-[0.02em] sm:text-5xl lg:text-[3.5rem]"
-          initial={reduce ? false : { opacity: 0, y: 22 }}
-          animate={reduce ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.08, ease: [0.22, 1, 0.36, 1] }}
-        >
-          Soft layers. Quiet rooms. Everyday indulgence.
-        </motion.h1>
-        <motion.p
-          className="mx-auto mt-5 max-w-xl text-sm leading-relaxed text-white/85 sm:text-base"
-          initial={reduce ? false : { opacity: 0, y: 18 }}
-          animate={reduce ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.16 }}
-        >
-          Pillows, bedding, bath, and window dressings—curated like a boutique, finished like heirlooms.
-        </motion.p>
-        <motion.div
-          className="pointer-events-auto mt-10 flex flex-wrap items-center justify-center gap-3"
-          initial={reduce ? false : { opacity: 0, y: 20 }}
-          animate={reduce ? undefined : { opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.26 }}
-        >
-          <a
-            href="#featured"
-            className="inline-flex min-h-12 min-w-[11rem] items-center justify-center rounded-full bg-[#faf8f5] px-8 text-[11px] font-semibold uppercase tracking-[0.26em] text-[#2a2622] shadow-[0_16px_50px_rgba(0,0,0,0.18)] transition hover:-translate-y-0.5"
-          >
-            Shop the edit
-          </a>
-          <a
-            href="#categories"
-            className="inline-flex min-h-12 min-w-[11rem] items-center justify-center rounded-full border border-white/55 px-8 text-[11px] font-semibold uppercase tracking-[0.26em] text-white transition hover:bg-white/10"
-          >
-            Browse categories
-          </a>
-        </motion.div>
-      </div>
-      <div className="pointer-events-auto absolute bottom-7 right-4 z-[3] flex items-center gap-2">
-        <button
-          type="button"
-          aria-label="Previous slide"
-          className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-[#faf8f5] shadow-sm backdrop-blur-sm transition hover:bg-black/55"
-          onClick={() => swiperRef.current?.slidePrev()}
-        >
-          <ChevronLeft className="size-5" strokeWidth={1.75} aria-hidden />
-        </button>
-        <button
-          type="button"
-          aria-label="Next slide"
-          className="grid size-10 place-items-center rounded-full border border-white/25 bg-black/40 text-[#faf8f5] shadow-sm backdrop-blur-sm transition hover:bg-black/55"
-          onClick={() => swiperRef.current?.slideNext()}
-        >
-          <ChevronRight className="size-5" strokeWidth={1.75} aria-hidden />
-        </button>
-      </div>
-    </section>
   );
 }
 
 export default function Home() {
-  const reduce = useReducedMotion();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [activeCategory, setActiveCategory] = useState<CategoryKey>("Bedding Sets");
   const [quickView, setQuickView] = useState<Product | null>(null);
-  const [newsletter, setNewsletter] = useState("");
-  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "sent">("idle");
-  const [topChromeH, setTopChromeH] = useState(0);
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const cartSubtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const softnessRowRef = useRef<HTMLDivElement>(null);
 
-  const addToCart = (product: Product) => {
-    setCartItems((items) => {
-      const existing = items.find((item) => item.id === product.id);
-      if (existing) {
-        return items.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item));
-      }
-      return [...items, { ...product, quantity: 1 }];
-    });
-    setCartOpen(true);
-  };
-
-  const updateCartQuantity = (id: string, nextQuantity: number) => {
-    setCartItems((items) =>
-      nextQuantity <= 0
-        ? items.filter((item) => item.id !== id)
-        : items.map((item) => (item.id === id ? { ...item, quantity: nextQuantity } : item)),
-    );
-  };
-
-  useLayoutEffect(() => {
-    const measure = () => {
-      const promo = document.getElementById("site-promo");
-      const head = document.getElementById("site-header");
-      setTopChromeH((promo?.getBoundingClientRect().height ?? 0) + (head?.getBoundingClientRect().height ?? 0));
-    };
-    measure();
-    const ro = new ResizeObserver(measure);
-    const p = document.getElementById("site-promo");
-    const h = document.getElementById("site-header");
-    if (p) ro.observe(p);
-    if (h) ro.observe(h);
-    window.addEventListener("resize", measure);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", measure);
-    };
-  }, []);
+  const selectedProducts = useMemo(
+    () => products.filter((product) => product.category === activeCategory),
+    [activeCategory],
+  );
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-[#faf8f5] text-[#2a2622]">
-      <div id="site-promo" className="bg-[#2a2622] py-2.5 text-[#f5f0e8]">
-        <div className={pageGutterClass}>
-          <p className={`${pageInnerClass} text-center text-[11px] font-medium uppercase leading-snug tracking-[0.28em] sm:text-xs`}>
-            Complimentary shipping on orders over ₹12,000 · Woven with care in Panipat
-          </p>
-        </div>
-      </div>
-
-      <header id="site-header" className="sticky top-0 z-50 overflow-x-clip overflow-y-visible border-b border-black/[0.06] bg-[#faf8f5]/90 backdrop-blur-md">
-        <div className={pageGutterClass}>
-          <div className={`${pageInnerClass} relative flex min-w-0 items-center justify-between gap-3 py-3 sm:py-4`}>
-            <div className="flex min-w-0 flex-1 items-center gap-5 lg:gap-10">
-              <a href="#home" className="shrink-0 font-serif text-xl font-semibold tracking-[0.06em] sm:text-2xl lg:text-[1.65rem]">
-                Gloria Beddings
+    <div className="min-h-screen bg-[#f8f4ee] text-[#25211d]">
+      <header className="sticky top-0 z-50 border-b border-[#dfd4c6] bg-[#fbf8f3]/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <a href="#home" className="font-serif text-2xl font-semibold tracking-[0.08em] text-[#25211d]">
+            GLORIA
+          </a>
+          <nav className="hidden items-center gap-1 lg:flex">
+            {["Bedding", "Comforters", "Curtains", "Cushions", "Story"].map((item) => (
+              <a
+                key={item}
+                href={item === "Story" ? "#story" : "#categories"}
+                className="rounded-full px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#6a6258] transition hover:bg-[#eee6dc] hover:text-[#25211d]"
+              >
+                {item}
               </a>
-
-              <nav className="hidden min-w-0 items-center gap-1 lg:flex" aria-label="Primary">
-                <a href="#home" className={primaryNavLinkClass}>
-                  Film
-                </a>
-                <a href="#new" className={primaryNavLinkClass}>
-                  New arrivals
-                </a>
-                <a href="#bestsellers" className={primaryNavLinkClass}>
-                  Best sellers
-                </a>
-                <a href="#why" className={primaryNavLinkClass}>
-                  Our craft
-                </a>
-                <ProductsMegaNav />
-              </nav>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-0.5 sm:gap-1">
-              <button
-                type="button"
-                aria-label="Search"
-                className="grid size-10 place-items-center rounded-full text-[#3a342e] transition hover:bg-black/[0.04]"
-              >
-                <Search className="size-[18px] stroke-[1.6]" />
-              </button>
-              <button
-                type="button"
-                aria-label="Account"
-                className="hidden size-10 place-items-center rounded-full text-[#3a342e] transition hover:bg-black/[0.04] sm:grid"
-              >
-                <User className="size-[18px] stroke-[1.6]" />
-              </button>
-              <button
-                type="button"
-                aria-label={`Cart, ${cartCount} items`}
-                onClick={() => setCartOpen(true)}
-                className="relative grid size-10 place-items-center rounded-full text-[#3a342e] transition hover:bg-black/[0.04]"
-              >
-                <ShoppingBag className="size-[18px] stroke-[1.6]" />
-                {cartCount > 0 ? (
-                  <span className="absolute -right-0.5 -top-0.5 grid min-w-5 place-items-center rounded-full bg-[#b6a06a] px-1 text-[10px] font-semibold text-white">
-                    {cartCount > 9 ? "9+" : cartCount}
-                  </span>
-                ) : null}
-              </button>
-              <button
-                type="button"
-                className="grid size-10 place-items-center rounded-full border border-black/[0.08] text-[#2a2622] lg:hidden"
-                aria-label="Open menu"
-                onClick={() => setMobileOpen(true)}
-              >
-                <Menu className="size-[18px] stroke-[1.6]" />
-              </button>
-            </div>
+            ))}
+          </nav>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="grid size-10 place-items-center rounded-full border border-[#dfd4c6] text-[#3c352e] transition hover:bg-[#eee6dc]"
+              aria-label="Search"
+            >
+              <Search className="size-4" strokeWidth={1.7} />
+            </button>
+            <button
+              type="button"
+              className="relative grid size-10 place-items-center rounded-full bg-[#25211d] text-white transition hover:bg-black"
+              aria-label="Open cart"
+              onClick={() => setCartOpen(true)}
+            >
+              <ShoppingBag className="size-4" strokeWidth={1.7} />
+            </button>
+            <button
+              type="button"
+              className="grid size-10 place-items-center rounded-full border border-[#dfd4c6] text-[#3c352e] transition hover:bg-[#eee6dc] lg:hidden"
+              aria-label="Open menu"
+              onClick={() => setMobileOpen((open) => !open)}
+            >
+              {mobileOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+            </button>
           </div>
         </div>
-
         {mobileOpen ? (
-          <div className="fixed inset-0 z-[60] lg:hidden">
-            <button type="button" className="absolute inset-0 bg-black/35" aria-label="Close menu" onClick={() => setMobileOpen(false)} />
-            <div className="absolute right-0 top-0 flex h-full w-[min(100vw-1rem,22rem)] flex-col bg-[#faf8f5] p-5 shadow-2xl sm:w-[min(100vw-1rem,26rem)]">
-              <div className="flex items-center justify-between gap-2 border-b border-black/[0.06] pb-4">
-                <p className="font-serif text-xl">Menu</p>
-                <button type="button" className="grid size-10 place-items-center rounded-full border border-black/[0.08]" aria-label="Close" onClick={() => setMobileOpen(false)}>
-                  <X className="size-[18px]" />
-                </button>
-              </div>
-              <div className="mt-4 flex flex-col gap-2 overflow-y-auto pb-6">
-                <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#a89886]">Browse</p>
-                {[
-                  ["Film", "#home"],
-                  ["New arrivals", "#new"],
-                  ["Best sellers", "#bestsellers"],
-                  ["Our craft", "#why"],
-                  ["Shop categories", "#categories"],
-                  ["Featured", "#featured"],
-                ].map(([label, href]) => (
-                  <a
-                    key={label}
-                    href={href}
-                    className="flex items-center justify-between rounded-xl border border-black/[0.08] px-4 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-[#3a342e] transition hover:bg-black/[0.04]"
-                    onClick={() => setMobileOpen(false)}
-                  >
-                    {label}
-                    <ArrowRight className="size-4 text-[#b6a06a]" strokeWidth={1.5} aria-hidden />
-                  </a>
-                ))}
-                <p className="mt-4 px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-[#a89886]">Products — mega menu</p>
-                <MobileProductMega onNavigate={() => setMobileOpen(false)} />
-              </div>
+          <div className="border-t border-[#dfd4c6] bg-[#fbf8f3] px-4 py-4 lg:hidden">
+            <div className="grid gap-2">
+              {["Bedding", "Comforters", "Curtains", "Cushions", "Story"].map((item) => (
+                <a
+                  key={item}
+                  href={item === "Story" ? "#story" : "#categories"}
+                  className="rounded-lg px-3 py-3 text-sm font-semibold text-[#3c352e] hover:bg-[#eee6dc]"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {item}
+                </a>
+              ))}
             </div>
           </div>
         ) : null}
       </header>
 
-      <Dialog.Root open={quickView !== null} onOpenChange={(open) => !open && setQuickView(null)}>
-        <main>
-          <HeroSection reduce={reduce ?? false} topChromeH={topChromeH} />
-
-          <section id="categories" className="border-b border-black/[0.06] bg-[#f3efe8] px-4 py-14 sm:px-6 lg:px-8">
-            <div className="mx-auto max-w-7xl">
-              <FadeIn className="text-center">
-                <h2 className="font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Shop by category</h2>
-                <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#6b635a]">
-                  Swipe through bedsheets, pillows, comforters, and more—everything to compose a calmer home.
-                </p>
-              </FadeIn>
-              <FadeIn className="mt-10" delay={0.08}>
-                <CategorySwiper />
-              </FadeIn>
-            </div>
-          </section>
-
-          <section id="featured" className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <div className="mx-auto max-w-7xl">
-              <FadeIn className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Curated now</p>
-                  <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Featured products</h2>
-                  <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#6b635a]">Editor favorites with limited palettes—swipe to compare, tap for quick view.</p>
-                </div>
-                <a href="#bestsellers" className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#2a2622] underline-offset-4 hover:underline">
-                  View best sellers
-                </a>
-              </FadeIn>
-              <FadeIn className="mt-10" delay={0.06}>
-                <ProductSwiper products={featured} onQuickView={setQuickView} onAddToCart={addToCart} />
-              </FadeIn>
-            </div>
-          </section>
-
-          <section id="why" className="border-y border-black/[0.06] bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <div className="mx-auto max-w-6xl text-center">
-              <FadeIn>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Why Gloria Beddings</p>
-                <h2 className="mt-3 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Quiet quality you can feel</h2>
-                <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#6b635a] sm:text-base">
-                  We obsess over weight, drape, and the way fabric sounds when you turn over at midnight—because details define luxury.
-                </p>
-              </FadeIn>
-              <Stagger className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-                {whyUs.map(({ title, body, Icon }) => (
-                  <StaggerItem key={title}>
-                    <div className="h-full rounded-2xl border border-black/[0.06] bg-[#faf8f5] p-7 text-left shadow-[0_12px_40px_rgba(42,38,34,0.05)]">
-                      <span className="inline-flex size-12 items-center justify-center rounded-full border border-[#e6dfd3] bg-white text-[#b6a06a]">
-                        <Icon className="size-5" strokeWidth={1.35} />
-                      </span>
-                      <h3 className="mt-5 text-sm font-semibold uppercase tracking-[0.16em] text-[#2a2622]">{title}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-[#6b635a]">{body}</p>
-                    </div>
-                  </StaggerItem>
-                ))}
-              </Stagger>
-            </div>
-          </section>
-
-          <section id="new" className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <div className="mx-auto max-w-7xl">
-              <FadeIn className="text-center">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Just landed</p>
-                <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">New arrivals</h2>
-                <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#6b635a]">Fresh textures for bath, bed, and living—small batches, honest photography.</p>
-              </FadeIn>
-              <FadeIn className="mt-10" delay={0.06}>
-                <ProductSwiper products={newArrivals} onQuickView={setQuickView} onAddToCart={addToCart} />
-              </FadeIn>
-            </div>
-          </section>
-
-          <FadeIn className="w-full">
-            <section className="relative isolate min-h-[360px] overflow-hidden py-16 sm:min-h-[420px] sm:py-20 lg:py-24">
-              <Image src={u(P.interiorA, 2000)} alt="Layered bedroom styling" fill className="object-cover" sizes="100vw" />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#2a2622]/85 via-[#2a2622]/55 to-[#2a2622]/25" />
-              <div className="relative mx-auto flex max-w-7xl flex-col gap-6 px-6 lg:flex-row lg:items-center lg:justify-between lg:px-10">
-                <div className="max-w-xl text-[#faf8f5]">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-[#f5f0e8]/75">The linen room edit</p>
-                  <h2 className="mt-4 font-serif text-3xl font-medium leading-tight sm:text-4xl lg:text-5xl">Compose a bedroom that exhales</h2>
-                  <p className="mt-4 text-sm leading-relaxed text-white/80 sm:text-base">
-                    Start with breathable bases, add tonal layers, finish with light-filtering curtains—three moves, boutique result.
-                  </p>
-                </div>
+      <main id="home">
+        <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#201c18]">
+          <Image
+            src={img(P.hero, 2200)}
+            alt="Layered luxury bedding in a warm bedroom"
+            fill
+            priority
+            className="object-cover opacity-78"
+            sizes="100vw"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(18,15,12,0.78),rgba(18,15,12,0.28),rgba(18,15,12,0.14))]" />
+          <div className="relative z-10 mx-auto flex min-h-[calc(100svh-4rem)] max-w-7xl items-end px-4 pb-10 pt-24 sm:px-6 lg:px-8">
+            <div className="max-w-3xl pb-[8vh] text-[#fffaf3]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#e2c895]">
+                Luxury bedding and home textiles
+              </p>
+              <h1 className="mt-5 font-serif text-5xl font-medium leading-[0.98] tracking-normal sm:text-6xl lg:text-7xl">
+                Calm rooms, softer sleep, beautifully finished.
+              </h1>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-[#fff6e8]/88 sm:text-lg">
+                Category-led collections for bedding sets, comforters, curtains, and cushions, styled with the quiet elegance of a premium home linen boutique.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <a
-                  href="#featured"
-                  className="inline-flex w-fit items-center justify-center rounded-full bg-[#faf8f5] px-9 py-3.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#2a2622] shadow-[0_18px_50px_rgba(0,0,0,0.22)] transition hover:-translate-y-0.5"
+                  href="#categories"
+                  className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#fffaf3] px-7 text-[11px] font-bold uppercase tracking-[0.2em] text-[#25211d] transition hover:bg-white"
                 >
-                  Build your bed
+                  Shop categories <ArrowRight className="size-4" />
+                </a>
+                <a
+                  href="#bestsellers"
+                  className="inline-flex min-h-12 items-center justify-center rounded-full border border-white/45 px-7 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition hover:bg-white/10"
+                >
+                  View bestsellers
                 </a>
               </div>
-            </section>
-          </FadeIn>
-
-          <section className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <div className="mx-auto max-w-7xl">
-              <FadeIn className="text-center">
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Window to bedroom</p>
-                  <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Light, Layers & Quiet Privacy</h2>
-                </div>
-              </FadeIn>
-              <Stagger className="mt-10 grid gap-6 lg:grid-cols-3">
-                {lightPrivacyStories.map((story) => (
-                  <StaggerItem key={story.title}>
-                    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-[#faf8f5] shadow-[0_14px_44px_rgba(42,38,34,0.06)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(42,38,34,0.1)]">
-                      <div className="relative aspect-[4/5] overflow-hidden bg-[#1f1b17]">
-                        <video
-                          className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.03]"
-                          poster={story.poster}
-                          muted
-                          loop
-                          playsInline
-                          autoPlay
-                          preload="metadata"
-                          onLoadedMetadata={(e) => {
-                            e.currentTarget.playbackRate = reduce ? 1 : 0.62;
-                          }}
-                        >
-                          <source src={story.video} type="video/mp4" />
-                        </video>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#1f1b17]/80 via-[#1f1b17]/18 to-transparent" />
-                      </div>
-                      <div className="flex flex-1 flex-col p-6">
-                        <h3 className="font-serif text-2xl font-medium leading-tight text-[#2a2622]">{story.title}</h3>
-                        <p className="mt-3 flex-1 text-sm leading-relaxed text-[#6b635a]">{story.body}</p>
-                        <a
-                          href={story.href}
-                          className="mt-6 inline-flex min-h-11 w-fit items-center justify-center rounded-full bg-[#2a2622] px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black"
-                        >
-                          {story.cta}
-                        </a>
-                      </div>
-                    </article>
-                  </StaggerItem>
-                ))}
-              </Stagger>
             </div>
-          </section>
+          </div>
+        </section>
 
-          <section id="bestsellers" className="bg-white px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <div className="mx-auto max-w-7xl">
-              <FadeIn className="text-center">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Customer favorites</p>
-                <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Best sellers</h2>
-                <p className="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-[#6b635a]">Pieces that earn repeat orders—swipe to explore the full set.</p>
-              </FadeIn>
-              <FadeIn className="mt-10" delay={0.06}>
-                <ProductSwiper products={bestSellers} onQuickView={setQuickView} onAddToCart={addToCart} />
-              </FadeIn>
-            </div>
-          </section>
-
-          <section className="border-y border-black/[0.06] bg-[#f3efe8] px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <div className="mx-auto max-w-6xl">
-              <FadeIn className="text-center">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Why Gloria Beddings</p>
-                <h2 className="mt-3 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Softness, structure, and everyday ease</h2>
-                <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-[#6b635a] sm:text-base">
-                  Thoughtful materials, calm styling, and dependable finishing for bedding that feels special without becoming fussy.
-                </p>
-              </FadeIn>
-              <Stagger className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                {whyUs.map(({ title, body, Icon }) => (
-                  <StaggerItem key={`review-why-${title}`}>
-                    <div className="h-full rounded-2xl border border-black/[0.06] bg-white p-6 text-left shadow-[0_14px_44px_rgba(42,38,34,0.06)]">
-                      <span className="inline-flex size-11 items-center justify-center rounded-full border border-[#e6dfd3] bg-[#faf8f5] text-[#b6a06a]">
-                        <Icon className="size-5" strokeWidth={1.35} />
-                      </span>
-                      <h3 className="mt-5 text-sm font-semibold uppercase tracking-[0.16em] text-[#2a2622]">{title}</h3>
-                      <p className="mt-3 text-sm leading-relaxed text-[#6b635a]">{body}</p>
-                    </div>
-                  </StaggerItem>
-                ))}
-              </Stagger>
-            </div>
-          </section>
-
-          <section className="px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
-            <FadeIn className="mx-auto max-w-6xl text-center">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#a89886]">Loved by homes everywhere</p>
-              <h2 className="mt-2 font-serif text-3xl font-medium tracking-[0.04em] sm:text-4xl">Customer reviews</h2>
-            </FadeIn>
-            <Stagger className="mx-auto mt-12 grid max-w-7xl gap-6 lg:grid-cols-3">
-              {testimonials.map((t) => (
-                <StaggerItem key={t.name}>
-                  <figure className="flex h-full flex-col rounded-2xl border border-black/[0.06] bg-[#faf8f5] p-8 text-left shadow-[0_14px_44px_rgba(42,38,34,0.06)]">
-                    <StarRow value={5} />
-                    <blockquote className="mt-5 flex-1 font-serif text-lg leading-relaxed text-[#2a2622]">&ldquo;{t.quote}&rdquo;</blockquote>
-                    <figcaption className="mt-6 text-sm text-[#6b635a]">
-                      <span className="font-semibold text-[#2a2622]">{t.name}</span> · {t.city}
-                    </figcaption>
-                  </figure>
-                </StaggerItem>
-              ))}
-            </Stagger>
-          </section>
-
-          <section className="border-t border-black/[0.06] bg-[#f3efe8] px-4 py-16 sm:px-6 lg:px-8">
-            <FadeIn>
-              <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 rounded-3xl border border-black/[0.06] bg-white px-6 py-12 text-center shadow-[0_22px_70px_rgba(42,38,34,0.08)] sm:px-12">
-                <Mail className="size-8 text-[#b6a06a]" strokeWidth={1.25} />
-                <h2 className="font-serif text-3xl font-medium tracking-[0.04em]">Join the Gloria Beddings list</h2>
-                <p className="max-w-xl text-sm leading-relaxed text-[#6b635a]">Private launches, care guides, and styling notes—no clutter, one elegant note per week.</p>
-                <form
-                  className="flex w-full max-w-md flex-col gap-3 sm:flex-row"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setNewsletterStatus("sent");
-                    setNewsletter("");
-                  }}
-                >
-                  <label htmlFor="newsletter-email" className="sr-only">
-                    Email address
-                  </label>
-                  <input
-                    id="newsletter-email"
-                    type="email"
-                    required
-                    value={newsletter}
-                    onChange={(e) => setNewsletter(e.target.value)}
-                    placeholder="Email address"
-                    className="min-h-12 flex-1 rounded-full border border-black/[0.1] bg-[#faf8f5] px-5 text-sm outline-none ring-[#b6a06a]/40 transition focus:ring-2"
-                  />
-                  <button
-                    type="submit"
-                    className="min-h-12 rounded-full bg-[#2a2622] px-8 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black"
-                  >
-                    Subscribe
-                  </button>
-                </form>
-                {newsletterStatus === "sent" ? <p className="text-sm text-[#6b635a]">Thank you—your first note is on the way.</p> : null}
+        <section className="border-y border-[#dfd4c6] bg-[#fffaf3]">
+          <div className="mx-auto grid max-w-7xl grid-cols-1 divide-y divide-[#dfd4c6] px-4 sm:grid-cols-2 sm:divide-x sm:divide-y-0 sm:px-6 lg:grid-cols-4 lg:px-8">
+            {benefits.map(({ label, Icon }) => (
+              <div key={label} className="flex items-center gap-3 py-5 text-sm font-medium text-[#3c352e] sm:px-5">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#eee6dc] text-[#8f6530]">
+                  <Icon className="size-4" strokeWidth={1.6} />
+                </span>
+                {label}
               </div>
-            </FadeIn>
-          </section>
-        </main>
+            ))}
+          </div>
+        </section>
 
-        <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-[70] bg-black/45" />
-          <Dialog.Content className="fixed left-1/2 top-1/2 z-[80] w-[min(92vw,960px)] max-h-[90vh] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-3xl border border-black/[0.08] bg-[#faf8f5] p-0 shadow-2xl outline-none">
-            {quickView ? (
-              <div className="grid gap-0 md:grid-cols-2">
-                <div className="relative aspect-square md:aspect-auto md:min-h-[420px]">
-                  <Image src={u(quickView.imageId, 1400)} alt={quickView.name} fill className="object-cover md:rounded-l-3xl" sizes="(max-width:768px) 92vw, 480px" />
-                </div>
-                <div className="flex flex-col p-8 md:p-10">
-                  <Dialog.Title className="font-serif text-3xl font-medium leading-tight">{quickView.name}</Dialog.Title>
-                  <Dialog.Description className="mt-4 text-sm leading-relaxed text-[#6b635a]">{quickView.blurb}</Dialog.Description>
-                  <div className="mt-5 flex items-center gap-3">
-                    <StarRow value={quickView.rating} />
-                    <span className="text-sm text-[#6b635a]">
-                      {quickView.rating.toFixed(1)} ({quickView.reviewCount} reviews)
+        <section className="bg-[#fffaf3] py-16 lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Soft touch edit</p>
+                <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  Softness Beyond Your Wildest Dreams
+                </h2>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  className="grid size-10 place-items-center rounded-full border border-[#dfd4c6] bg-white text-[#25211d] transition hover:bg-[#eee6dc]"
+                  aria-label="Scroll softness edit left"
+                  onClick={() => softnessRowRef.current?.scrollBy({ left: -340, behavior: "smooth" })}
+                >
+                  <ChevronLeft className="size-4" strokeWidth={1.7} />
+                </button>
+                <button
+                  type="button"
+                  className="grid size-10 place-items-center rounded-full border border-[#dfd4c6] bg-white text-[#25211d] transition hover:bg-[#eee6dc]"
+                  aria-label="Scroll softness edit right"
+                  onClick={() => softnessRowRef.current?.scrollBy({ left: 340, behavior: "smooth" })}
+                >
+                  <ChevronRight className="size-4" strokeWidth={1.7} />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div ref={softnessRowRef} className="hide-scrollbar mt-9 overflow-x-auto overflow-y-hidden px-4 pb-4 sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-7xl gap-4">
+              {[...categories, ...products.slice(0, 4).map((product) => ({
+                key: product.category,
+                title: product.name,
+                kicker: product.tone,
+                imageId: product.imageId,
+                description: product.detail,
+              }))].map((item, index) => (
+                <article
+                  key={`${item.title}-${index}`}
+                  className="group w-[78vw] shrink-0 overflow-hidden rounded-lg border border-[#dfd4c6] bg-white sm:w-72 lg:w-80"
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#e8ded0]">
+                    <Image
+                      src={img(item.imageId, 900)}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                      sizes="(max-width: 640px) 78vw, 320px"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8f6530]">{item.kicker}</p>
+                    <h3 className="mt-3 font-serif text-2xl font-medium leading-tight">{item.title}</h3>
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#6a6258]">{item.description}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="categories" className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Shop by category</p>
+                <h2 className="mt-3 max-w-2xl font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  Built around the way your home is actually styled.
+                </h2>
+              </div>
+            </div>
+
+            <div className="hide-scrollbar mt-10 flex gap-4 overflow-x-auto overflow-y-hidden pb-4">
+              {categories.map((category) => (
+                <button
+                  key={category.key}
+                  type="button"
+                  onClick={() => setActiveCategory(category.key)}
+                  className={`group w-[78vw] shrink-0 overflow-hidden rounded-lg border text-left transition sm:w-[calc((100%-1rem)/2)] lg:w-[calc((100%-3rem)/4)] ${
+                    activeCategory === category.key
+                      ? "border-[#8f6530] bg-[#fffaf3] shadow-[0_18px_55px_rgba(60,53,46,0.12)]"
+                      : "border-[#dfd4c6] bg-white hover:border-[#bda98f]"
+                  }`}
+                >
+                  <span className="relative block aspect-[4/5] overflow-hidden bg-[#e8ded0]">
+                    <Image
+                      src={img(category.imageId, 900)}
+                      alt={category.title}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                      sizes="(max-width: 1024px) 50vw, 25vw"
+                    />
+                  </span>
+                  <span className="block p-5">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#8f6530]">
+                      {category.kicker}
+                    </span>
+                    <span className="mt-2 block font-serif text-2xl font-medium">{category.title}</span>
+                    <span className="mt-3 block text-sm leading-6 text-[#6a6258]">{category.description}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#fffaf3] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Popular classes</p>
+                <h2 className="mt-3 max-w-2xl font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  The product classes shoppers reach for first.
+                </h2>
+              </div>
+              <a
+                href="#categories"
+                className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#25211d]"
+              >
+                View all categories <ArrowRight className="size-3.5" />
+              </a>
+            </div>
+
+            <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {popularClasses.map((item) => (
+                <button
+                  key={item.title}
+                  type="button"
+                  onClick={() => setActiveCategory(item.category)}
+                  className="group grid overflow-hidden rounded-lg border border-[#dfd4c6] bg-white text-left transition hover:border-[#bda98f] hover:shadow-[0_18px_55px_rgba(60,53,46,0.1)] sm:grid-cols-[9rem_1fr]"
+                >
+                  <span className="relative block aspect-[5/4] bg-[#e8ded0] sm:aspect-auto sm:min-h-44">
+                    <Image
+                      src={img(item.imageId, 700)}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                      sizes="(max-width: 768px) 100vw, 144px"
+                    />
+                  </span>
+                  <span className="flex min-h-44 flex-col p-5">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8f6530]">{item.count}</span>
+                    <span className="mt-3 font-serif text-2xl font-medium leading-tight">{item.title}</span>
+                    <span className="mt-3 text-sm leading-6 text-[#6a6258]">{item.note}</span>
+                    <span className="mt-auto inline-flex items-center gap-2 pt-5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#25211d]">
+                      Explore class <ArrowRight className="size-3.5" />
+                    </span>
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="bestsellers" className="bg-[#25211d] px-4 py-16 text-[#fffaf3] sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-7 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#e2c895]">Curated edit</p>
+                <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  {activeCategory} with a more elegant point of view.
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((category) => (
+                  <button
+                    key={category.key}
+                    type="button"
+                    onClick={() => setActiveCategory(category.key)}
+                    className={`inline-flex min-h-10 items-center rounded-full border px-4 text-[10px] font-bold uppercase tracking-[0.16em] transition ${
+                      activeCategory === category.key
+                        ? "border-[#e2c895] bg-[#e2c895] text-[#25211d]"
+                        : "border-white/20 text-[#fffaf3] hover:bg-white/10"
+                    }`}
+                  >
+                    {category.key}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-10 grid gap-5 md:grid-cols-2">
+              {selectedProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  dark
+                  onQuickView={() => setQuickView(product)}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#fffaf3] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+              <div className="lg:sticky lg:top-24">
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Category compass</p>
+                <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  Help shoppers understand the whole home collection at a glance.
+                </h2>
+                <p className="mt-5 text-sm leading-7 text-[#6a6258]">
+                  This section keeps the landing page focused on product families instead of cart actions, so each category has a clear purpose and taste level.
+                </p>
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {categoryHighlights.map(([title, body, materials]) => (
+                  <article key={title} className="rounded-lg border border-[#dfd4c6] bg-white p-6">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#8f6530]">{title}</p>
+                    <h3 className="mt-4 font-serif text-2xl font-medium">{body}</h3>
+                    <p className="mt-4 text-sm leading-6 text-[#6a6258]">{materials}</p>
+                    <a
+                      href="#bestsellers"
+                      onClick={() => setActiveCategory(title as CategoryKey)}
+                      className="mt-6 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[#25211d]"
+                    >
+                      Explore edit <ArrowRight className="size-3.5" />
+                    </a>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#fffaf3] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Why Gloria</p>
+              <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                Soft home layers with a quieter, more considered point of view.
+              </h2>
+              <p className="mt-5 text-sm leading-7 text-[#6a6258]">
+                Gloria Beddings is built for shoppers who want their rooms to feel composed, comfortable, and easy to update by category, color, or mood.
+              </p>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {whyGloria.map(({ title, body, Icon }) => (
+                <article key={title} className="rounded-lg border border-[#dfd4c6] bg-white p-6">
+                  <span className="grid size-11 place-items-center rounded-full bg-[#eee6dc] text-[#8f6530]">
+                    <Icon className="size-5" strokeWidth={1.5} />
+                  </span>
+                  <h3 className="mt-5 font-serif text-2xl font-medium leading-tight">{title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-[#6a6258]">{body}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="story" className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-[#e8ded0] lg:aspect-[5/6]">
+              <Image
+                src={img(P.linen, 1400)}
+                alt="Close detail of premium linen fabric"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 45vw"
+              />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Material story</p>
+              <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                Softness first, but never at the cost of structure.
+              </h2>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-[#6a6258]">
+                The new layout gives each category a clear shopping job: bedding for complete room updates, comforters for seasonal sleep, curtains for privacy and light, and cushions for finishing texture.
+              </p>
+              <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                {storyStats.map(([value, label]) => (
+                  <div key={value} className="border-l border-[#cdbca6] pl-5">
+                    <p className="font-serif text-4xl font-semibold">{value}</p>
+                    <p className="mt-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#6a6258]">{label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-10 grid gap-4 sm:grid-cols-2">
+                {[
+                  ["Cotton-rich handfeel", "Smooth, breathable, and easy to layer across Indian seasons."],
+                  ["Category specific styling", "Every section shows what the product does in the room."],
+                  ["Warm neutral palette", "Elegant ivory, walnut, stone, and muted gold instead of loud sale blocks."],
+                  ["Practical commerce", "Fast add to cart, quick view, and compact pricing remain close to the product."],
+                ].map(([title, body]) => (
+                  <div key={title} className="rounded-lg border border-[#dfd4c6] bg-[#fffaf3] p-5">
+                    <p className="font-serif text-xl font-medium">{title}</p>
+                    <p className="mt-2 text-sm leading-6 text-[#6a6258]">{body}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#fffaf3] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Shop By Color</p>
+                <h2 className="mt-3 max-w-2xl font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  Choose the tone first, then build the room around it.
+                </h2>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {colorStories.map((color) => (
+                  <a
+                    key={color.name}
+                    href="#categories"
+                    className="grid size-9 place-items-center rounded-full border border-[#dfd4c6] bg-white transition hover:scale-105"
+                    aria-label={`Shop ${color.name}`}
+                    title={color.name}
+                  >
+                    <span
+                      className="size-6 rounded-full border border-black/10"
+                      style={{ backgroundColor: color.hex }}
+                    />
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {colorStories.map((color) => (
+                <article key={color.name} className="group overflow-hidden rounded-lg border border-[#dfd4c6] bg-white">
+                  <div className="relative aspect-[5/4] overflow-hidden bg-[#e8ded0]">
+                    <Image
+                      src={img(color.imageId, 900)}
+                      alt={`${color.name} home textile mood`}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full bg-[#fffaf3]/95 px-3 py-2 shadow-sm">
+                      <span
+                        className="size-5 rounded-full border border-black/10"
+                        style={{ backgroundColor: color.hex }}
+                      />
+                      <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#25211d]">
+                        {color.name}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-serif text-2xl font-medium">{color.name}</h3>
+                    <p className="mt-3 text-sm leading-6 text-[#6a6258]">{color.note}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="max-w-2xl">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Shop by room mood</p>
+              <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                Category stories that feel editorial, not transactional.
+              </h2>
+            </div>
+            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              {roomGuides.map((guide, index) => (
+                <article key={guide.title} className="group overflow-hidden rounded-lg border border-[#dfd4c6] bg-[#fffaf3]">
+                  <div className="relative aspect-[4/5] overflow-hidden bg-[#e8ded0]">
+                    <SlowVideo
+                      src={guide.video}
+                      poster={img(guide.imageId, 1000)}
+                      label={guide.title}
+                    />
+                    <span className="absolute left-4 top-4 rounded-full bg-[#fffaf3] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#25211d]">
+                      0{index + 1}
                     </span>
                   </div>
-                  <div className="mt-6 flex items-baseline gap-3">
-                    <span className="text-2xl font-semibold text-[#2a2622]">{formatRupee(quickView.price)}</span>
-                    {quickView.compareAt && quickView.compareAt > quickView.price ? (
-                      <span className="text-base text-[#a89886] line-through">{formatRupee(quickView.compareAt)}</span>
-                    ) : null}
+                  <div className="p-6">
+                    <h3 className="font-serif text-3xl font-medium">{guide.title}</h3>
+                    <p className="mt-3 text-sm leading-7 text-[#6a6258]">{guide.body}</p>
                   </div>
-                  <div className="mt-8 flex flex-wrap gap-3">
-                    <button
-                      type="button"
-                      className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#2a2622] px-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#faf8f5] transition hover:bg-black"
-                      onClick={() => {
-                        addToCart(quickView);
-                        setQuickView(null);
-                      }}
-                    >
-                      Add to cart
-                    </button>
-                    <Dialog.Close className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full border border-black/[0.12] px-6 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#2a2622] transition hover:bg-black/[0.04]">
-                      Close
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#fffaf3] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid gap-5 md:grid-cols-3">
+              {[
+                {
+                  title: "Bedroom bundles",
+                  body: "Sheets, comforters, pillow covers, and cushions arranged as ready-to-style edits.",
+                  imageId: P.bedroom,
+                  Icon: Moon,
+                },
+                {
+                  title: "Window finishing",
+                  body: "Choose sheer, room-darkening, or blackout curtains by utility, color, and fabric.",
+                  imageId: P.curtains,
+                  Icon: ShieldCheck,
+                },
+                {
+                  title: "Giftable softness",
+                  body: "Towels, throws, and covers that make simple home upgrades feel considered.",
+                  imageId: P.bath,
+                  Icon: Award,
+                },
+              ].map(({ title, body, imageId, Icon }) => (
+                <article key={title} className="overflow-hidden rounded-lg border border-[#dfd4c6] bg-white">
+                  <div className="relative aspect-[5/4]">
+                    <Image src={img(imageId, 900)} alt={title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                  </div>
+                  <div className="p-6">
+                    <Icon className="size-6 text-[#8f6530]" strokeWidth={1.5} />
+                    <h3 className="mt-4 font-serif text-2xl font-medium">{title}</h3>
+                    <p className="mt-3 text-sm leading-6 text-[#6a6258]">{body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#f8f4ee] px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <div className="mx-auto max-w-7xl">
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#8f6530]">Customer reviews</p>
+              <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                Loved for softness, restraint, and rooms that feel finished.
+              </h2>
+            </div>
+
+            <div className="mt-10 grid gap-5 lg:grid-cols-3">
+              {customerReviews.map((review) => (
+                <figure key={review.name} className="rounded-lg border border-[#dfd4c6] bg-[#fffaf3] p-6 shadow-[0_18px_55px_rgba(60,53,46,0.06)]">
+                  <div className="flex items-center justify-between gap-4">
+                    <Rating value={5} count={1} />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#8f6530]">Verified</span>
+                  </div>
+                  <blockquote className="mt-6 font-serif text-2xl font-medium leading-snug text-[#25211d]">
+                    &ldquo;{review.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="mt-7 border-t border-[#dfd4c6] pt-5">
+                    <p className="font-semibold text-[#25211d]">{review.name}</p>
+                    <p className="mt-1 text-sm text-[#6a6258]">{review.location}</p>
+                    <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#8f6530]">
+                      {review.product}
+                    </p>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-[#f8f4ee] px-4 py-12 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl">
+            <div className="grid overflow-hidden rounded-lg border border-[#dfd4c6] bg-[#25211d] text-[#fffaf3] md:grid-cols-[1fr_auto]">
+              <div className="p-6 sm:p-8 lg:p-10">
+                <p className="text-[11px] font-bold uppercase tracking-[0.24em] text-[#e2c895]">First order offer</p>
+                <h2 className="mt-3 font-serif text-4xl font-medium leading-tight sm:text-5xl">
+                  15% off your first order of ₹200+
+                </h2>
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-[#e8ded0]">
+                  A soft welcome for new shoppers exploring bedding sets, comforters, curtains, and cushion edits.
+                </p>
+              </div>
+              <div className="flex items-center border-t border-white/10 p-6 md:border-l md:border-t-0 sm:p-8 lg:p-10">
+                <div className="min-w-52 rounded-lg border border-white/15 bg-white/[0.06] p-5 text-center">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#e2c895]">Use code</p>
+                  <p className="mt-2 font-serif text-3xl font-semibold tracking-[0.08em]">WELCOME15</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="bg-[#171411] px-4 py-14 text-[#f8f4ee] sm:px-6 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-2 lg:grid-cols-12">
+          <div className="lg:col-span-4">
+            <p className="font-serif text-3xl font-semibold tracking-[0.08em]">GLORIA BEDDINGS</p>
+            <p className="mt-4 max-w-sm text-sm leading-7 text-[#d8cdbd]">
+              Elegant home linens for softer bedrooms, calmer windows, plush bath rituals, and finished living spaces.
+            </p>
+          </div>
+          <FooterColumn title="Categories" links={["Bedding Sets", "Comforters", "Curtains", "Cushions", "Towels"]} />
+          <FooterColumn title="Home" links={["Throws", "Sofa Covers", "Bath Linens", "Room Mood", "Material Story"]} />
+          <FooterColumn title="Support" links={["Shipping", "Returns", "Care Guide", "Size Help", "Contact"]} />
+          <div className="lg:col-span-2">
+            <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#e2c895]">Visit</p>
+            <p className="mt-4 text-sm leading-7 text-[#d8cdbd]">
+              Panipat, Haryana
+              <br />
+              India
+            </p>
+            <p className="mt-4 text-sm leading-7 text-[#d8cdbd]">
+              hello@gloriabeddings.com
+              <br />
+              +91 1800-123-456
+            </p>
+          </div>
+        </div>
+        <div className="mx-auto mt-12 flex max-w-7xl flex-col gap-4 border-t border-white/10 pt-6 text-xs text-[#d8cdbd]/70 sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Gloria Beddings. All rights reserved.</p>
+          <p className="font-semibold uppercase tracking-[0.16em]">UPI · RuPay · Visa · Mastercard</p>
+        </div>
+      </footer>
+
+      <Dialog.Root open={Boolean(quickView)} onOpenChange={(open) => !open && setQuickView(null)}>
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-[80] bg-black/55" />
+          <Dialog.Content className="fixed left-1/2 top-1/2 z-[90] max-h-[90vh] w-[min(92vw,940px)] -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-lg bg-[#fffaf3] shadow-2xl outline-none">
+            {quickView ? (
+              <div className="grid md:grid-cols-2">
+                <div className="relative aspect-square min-h-72 bg-[#e8ded0] md:aspect-auto">
+                  <Image src={img(quickView.imageId, 1200)} alt={quickView.name} fill className="object-cover" sizes="(max-width: 768px) 92vw, 470px" />
+                </div>
+                <div className="p-7 sm:p-9">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#8f6530]">{quickView.category}</p>
+                      <Dialog.Title className="mt-3 font-serif text-3xl font-medium leading-tight">{quickView.name}</Dialog.Title>
+                    </div>
+                    <Dialog.Close className="grid size-10 shrink-0 place-items-center rounded-full border border-[#dfd4c6] hover:bg-[#eee6dc]" aria-label="Close quick view">
+                      <X className="size-4" />
                     </Dialog.Close>
+                  </div>
+                  <Dialog.Description className="mt-5 text-sm leading-7 text-[#6a6258]">
+                    {quickView.detail}
+                  </Dialog.Description>
+                  <div className="mt-5">
+                    <Rating value={quickView.rating} count={quickView.reviews} />
+                  </div>
+                  <div className="mt-6 flex items-baseline gap-3">
+                    <span className="text-2xl font-bold">{rupee(quickView.price)}</span>
+                    {quickView.compareAt ? <span className="text-sm text-[#9b8d7c] line-through">{rupee(quickView.compareAt)}</span> : null}
+                  </div>
+                  <p className="mt-2 text-sm text-[#6a6258]">{quickView.tone}</p>
+                  <div className="mt-8 rounded-lg border border-[#dfd4c6] bg-white p-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8f6530]">Category note</p>
+                    <p className="mt-2 text-sm leading-6 text-[#6a6258]">
+                      Use this product as part of the {quickView.category.toLowerCase()} edit to show color, texture, and room purpose before asking shoppers to choose.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -1169,249 +1172,156 @@ export default function Home() {
       </Dialog.Root>
 
       <Dialog.Root open={cartOpen} onOpenChange={setCartOpen}>
-        <AnimatePresence>
-          {cartOpen ? (
-            <Dialog.Portal forceMount>
-              <Dialog.Overlay asChild forceMount>
-                <motion.div
-                  className="fixed inset-0 z-[90] bg-black/45"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: reduce ? 0 : 0.22, ease: "easeOut" }}
-                />
-              </Dialog.Overlay>
-              <Dialog.Content asChild forceMount>
-                <motion.div
-                  className="fixed right-0 top-0 z-[100] flex h-dvh w-[min(100vw,28rem)] flex-col bg-[#faf8f5] shadow-2xl outline-none"
-                  initial={{ x: "100%" }}
-                  animate={{ x: 0 }}
-                  exit={{ x: "100%" }}
-                  transition={{ duration: reduce ? 0 : 0.34, ease: [0.22, 1, 0.36, 1] }}
-                >
-            <div className="flex items-center justify-between gap-4 border-b border-black/[0.08] px-5 py-4">
+        <Dialog.Portal>
+          <Dialog.Overlay className="fixed inset-0 z-[80] bg-black/45" />
+          <Dialog.Content className="fixed right-0 top-0 z-[90] flex h-dvh w-[min(100vw,28rem)] flex-col bg-[#fffaf3] shadow-2xl outline-none">
+            <div className="flex items-center justify-between border-b border-[#dfd4c6] px-5 py-4">
               <div>
-                <Dialog.Title className="font-serif text-2xl font-medium tracking-[0.03em]">Your cart</Dialog.Title>
-                <Dialog.Description className="mt-1 text-xs uppercase tracking-[0.18em] text-[#8a8076]">
-                  {cartCount > 0 ? `${cartCount} ${cartCount === 1 ? "item" : "items"}` : "No item added"}
+                <Dialog.Title className="font-serif text-2xl font-medium">Your cart</Dialog.Title>
+                <Dialog.Description className="mt-1 text-xs uppercase tracking-[0.16em] text-[#6a6258]">
+                  Category-first preview
                 </Dialog.Description>
               </div>
-              <Dialog.Close className="grid size-10 place-items-center rounded-full border border-black/[0.08] text-[#2a2622] transition hover:bg-black/[0.04]" aria-label="Close cart">
-                <X className="size-[18px]" />
+              <Dialog.Close className="grid size-10 place-items-center rounded-full border border-[#dfd4c6] hover:bg-[#eee6dc]" aria-label="Close cart">
+                <X className="size-4" />
               </Dialog.Close>
             </div>
-
-            {cartItems.length > 0 ? (
-              <>
-                <div className="flex-1 overflow-y-auto px-5 py-5">
-                  <ul className="space-y-5">
-                    {cartItems.map((item) => (
-                      <li key={item.id} className="grid grid-cols-[5.75rem_1fr] gap-4 border-b border-black/[0.06] pb-5 last:border-b-0">
-                        <div className="relative aspect-square overflow-hidden rounded-lg bg-[#ece7df]">
-                          <Image src={u(item.imageId, 400)} alt={item.name} fill className="object-cover" sizes="92px" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-start justify-between gap-3">
-                            <div className="min-w-0">
-                              <p className="font-serif text-base font-medium leading-snug text-[#2a2622]">{item.name}</p>
-                              <p className="mt-1 text-sm font-semibold text-[#2a2622]">{formatRupee(item.price)}</p>
-                            </div>
-                            <button
-                              type="button"
-                              className="grid size-8 shrink-0 place-items-center rounded-full text-[#8a8076] transition hover:bg-black/[0.04] hover:text-[#2a2622]"
-                              aria-label={`Remove ${item.name}`}
-                              onClick={() => updateCartQuantity(item.id, 0)}
-                            >
-                              <Trash2 className="size-4" strokeWidth={1.5} />
-                            </button>
-                          </div>
-                          <div className="mt-4 flex items-center justify-between gap-3">
-                            <div className="inline-flex h-10 items-center overflow-hidden rounded-full border border-black/[0.1] bg-white">
-                              <button
-                                type="button"
-                                className="grid size-10 place-items-center text-[#2a2622] transition hover:bg-black/[0.04]"
-                                aria-label={`Decrease quantity for ${item.name}`}
-                                onClick={() => updateCartQuantity(item.id, item.quantity - 1)}
-                              >
-                                <Minus className="size-3.5" strokeWidth={1.8} />
-                              </button>
-                              <span className="min-w-8 text-center text-sm font-semibold tabular-nums">{item.quantity}</span>
-                              <button
-                                type="button"
-                                className="grid size-10 place-items-center text-[#2a2622] transition hover:bg-black/[0.04]"
-                                aria-label={`Increase quantity for ${item.name}`}
-                                onClick={() => updateCartQuantity(item.id, item.quantity + 1)}
-                              >
-                                <Plus className="size-3.5" strokeWidth={1.8} />
-                              </button>
-                            </div>
-                            <p className="text-sm font-semibold text-[#2a2622]">{formatRupee(item.price * item.quantity)}</p>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="border-t border-black/[0.08] bg-white px-5 py-5">
-                  <div className="flex items-center justify-between gap-4 text-sm">
-                    <span className="font-semibold uppercase tracking-[0.18em] text-[#6b635a]">Subtotal</span>
-                    <span className="text-xl font-semibold text-[#2a2622]">{formatRupee(cartSubtotal)}</span>
-                  </div>
-                  <p className="mt-2 text-xs leading-relaxed text-[#8a8076]">Shipping and taxes are calculated at checkout.</p>
-                  <button
-                    type="button"
-                    className="mt-5 inline-flex min-h-12 w-full items-center justify-center rounded-full bg-[#2a2622] px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black"
-                  >
-                    Checkout
-                  </button>
-                  <Dialog.Close className="mt-3 inline-flex min-h-12 w-full items-center justify-center rounded-full border border-black/[0.12] px-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#2a2622] transition hover:bg-black/[0.04]">
-                    Continue shopping
-                  </Dialog.Close>
-                </div>
-              </>
-            ) : (
-              <div className="flex flex-1 flex-col items-center justify-center px-8 py-12 text-center">
-                <span className="grid size-16 place-items-center rounded-full bg-white text-[#b6a06a] shadow-sm ring-1 ring-black/[0.06]">
-                  <ShoppingBag className="size-7" strokeWidth={1.4} />
+            <div className="flex flex-1 flex-col justify-between p-6">
+              <div>
+                <span className="grid size-14 place-items-center rounded-full bg-[#eee6dc] text-[#8f6530]">
+                  <ShoppingBag className="size-6" strokeWidth={1.5} />
                 </span>
-                <p className="mt-6 font-serif text-2xl font-medium">No item added</p>
-                <p className="mt-3 max-w-xs text-sm leading-relaxed text-[#6b635a]">Your cart is ready for sheets, quilts, pillows, and calm little home upgrades.</p>
-                <Dialog.Close className="mt-7 inline-flex min-h-11 items-center justify-center rounded-full bg-[#2a2622] px-8 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#faf8f5] transition hover:bg-black">
-                  Start shopping
-                </Dialog.Close>
+                <p className="mt-6 font-serif text-3xl font-medium leading-tight">Cart stays in the header.</p>
+                <p className="mt-4 text-sm leading-7 text-[#6a6258]">
+                  The landing page now introduces categories first. Product purchase actions can be connected later from collection or product detail pages without making this page feel crowded.
+                </p>
+                <div className="mt-7 grid gap-3">
+                  {categories.map((category) => (
+                    <button
+                      key={category.key}
+                      type="button"
+                      className="flex items-center justify-between rounded-lg border border-[#dfd4c6] bg-white px-4 py-3 text-left transition hover:bg-[#f8f4ee]"
+                      onClick={() => {
+                        setActiveCategory(category.key);
+                        setCartOpen(false);
+                      }}
+                    >
+                      <span>
+                        <span className="block font-serif text-lg font-medium">{category.key}</span>
+                        <span className="mt-1 block text-xs uppercase tracking-[0.14em] text-[#8f6530]">{category.kicker}</span>
+                      </span>
+                      <ArrowRight className="size-4 text-[#8f6530]" />
+                    </button>
+                  ))}
+                </div>
               </div>
-            )}
-                </motion.div>
-              </Dialog.Content>
-            </Dialog.Portal>
-          ) : null}
-        </AnimatePresence>
-      </Dialog.Root>
-
-      <footer className="bg-[#221e1a] px-4 py-16 text-[#f5f0e8] sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-7xl gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-10">
-          <div className="lg:col-span-4">
-            <p className="font-serif text-3xl tracking-[0.06em]">Gloria Beddings</p>
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-[#d8d0c6]/85">
-              Luxury home textiles for calmer bedrooms, softer sofas, and windows that glow at golden hour—rooted in Panipat.
-            </p>
-            <div className="mt-6 flex gap-3">
-              <a href="#home" className="grid size-10 place-items-center rounded-full border border-white/15 text-[#f5f0e8] transition hover:bg-white/10" aria-label="Instagram">
-                <Camera className="size-[18px]" strokeWidth={1.35} />
-              </a>
-              <a href="#home" className="grid size-10 place-items-center rounded-full border border-white/15 text-[#f5f0e8] transition hover:bg-white/10" aria-label="Facebook">
-                <Link2 className="size-[18px]" strokeWidth={1.35} />
-              </a>
-              <a href="#home" className="grid size-10 place-items-center rounded-full border border-white/15 text-[#f5f0e8] transition hover:bg-white/10" aria-label="Email">
-                <Mail className="size-[18px]" strokeWidth={1.35} />
-              </a>
+              <Dialog.Close className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[#25211d] px-6 text-[11px] font-bold uppercase tracking-[0.2em] text-white transition hover:bg-black">
+                Continue exploring
+              </Dialog.Close>
             </div>
-          </div>
-          <FooterCol className="lg:col-span-2" title="Shop" links={["Bedding", "Bath", "Windows", "Living", "Sale"]} />
-          <FooterCol className="lg:col-span-2" title="Help" links={["Orders & shipping", "Returns", "Care guides", "Size finder", "Contact"]} />
-          <FooterCol className="lg:col-span-2" title="Company" links={["Our story", "Materials", "Sustainability", "Press", "Careers"]} />
-          <div className="lg:col-span-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#d8d0c6]/55">Visit</p>
-            <p className="mt-4 text-sm leading-relaxed text-[#d8d0c6]/85">
-              Atelier & flagship
-              <br />
-              Model Town, Panipat
-              <br />
-              Haryana 132103, India
-            </p>
-            <p className="mt-3 text-sm text-[#d8d0c6]/85">
-              <a href="tel:+911800123456" className="transition hover:text-white">
-                +91 1800-123-456
-              </a>
-            </p>
-            <p className="mt-1 text-sm text-[#d8d0c6]/85">
-              <a href="mailto:hello@gloriabeddings.com" className="transition hover:text-white">
-                hello@gloriabeddings.com
-              </a>
-            </p>
-          </div>
-        </div>
-        <div className="mx-auto mt-14 flex max-w-7xl flex-col gap-4 border-t border-white/10 pt-8 text-xs text-[#d8d0c6]/55 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Gloria Beddings. All rights reserved.</p>
-          <p className="font-medium tracking-[0.12em] text-[#d8d0c6]/65">UPI · RuPay · Visa · Mastercard</p>
-        </div>
-      </footer>
+          </Dialog.Content>
+        </Dialog.Portal>
+      </Dialog.Root>
     </div>
   );
 }
 
-function ProductCard({ product, onQuickView, onAddToCart }: { product: Product; onQuickView: () => void; onAddToCart: () => void }) {
+function SlowVideo({ src, poster, label }: { src: string; poster: string; label: string }) {
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_14px_44px_rgba(42,38,34,0.06)] transition hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(42,38,34,0.1)]">
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#ece7df]">
-        <Image src={u(product.imageId, 900)} alt={product.name} fill className="object-cover transition duration-700 group-hover:scale-[1.04]" sizes="(max-width:1024px) 85vw, 25vw" />
-        {product.badge ? (
-          <span
-            className={`absolute left-3 top-3 rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-sm ${
-              product.badge === "Sale" ? "bg-[#8b5a4a]" : product.badge === "New" ? "bg-[#2a2622]" : "bg-[#b6a06a]"
-            }`}
-          >
-            {product.badge}
-          </span>
-        ) : null}
-        <button
-          type="button"
-          onClick={onQuickView}
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/95 px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#2a2622] opacity-0 shadow-md backdrop-blur transition group-hover:translate-y-0 group-hover:opacity-100 sm:bottom-4"
-        >
-          Quick view
-        </button>
-      </div>
-      <div className="flex flex-1 flex-col p-5">
-        <h3 className="min-h-[3.2rem] font-serif text-lg font-medium leading-snug">{product.name}</h3>
-        <div className="mt-2 flex items-center gap-2">
-          <StarRow value={product.rating} />
-          <span className="text-xs text-[#6b635a]">
-            {product.rating.toFixed(1)} ({product.reviewCount})
-          </span>
-        </div>
-        <div className="mt-4 flex items-baseline gap-2">
-          <span className="text-lg font-semibold text-[#2a2622]">{formatRupee(product.price)}</span>
-          {product.compareAt && product.compareAt > product.price ? (
-            <span className="text-sm text-[#a89886] line-through">{formatRupee(product.compareAt)}</span>
-          ) : null}
-        </div>
-        <div className="mt-auto flex gap-2 pt-5">
-          <button
-            type="button"
-            onClick={onAddToCart}
-            className="inline-flex min-h-11 flex-1 items-center justify-center rounded-full bg-[#2a2622] text-[10px] font-semibold uppercase tracking-[0.2em] text-[#faf8f5] transition hover:bg-black"
-          >
-            Add to cart
-          </button>
-          <button
-            type="button"
-            onClick={onQuickView}
-            className="inline-flex min-h-11 items-center justify-center rounded-full border border-black/[0.1] px-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-[#2a2622] transition hover:bg-black/[0.04]"
-            aria-label={`Quick view ${product.name}`}
-          >
-            View
-          </button>
-        </div>
-      </div>
-    </article>
+    <video
+      ref={(node) => {
+        if (node) {
+          node.playbackRate = 0.55;
+        }
+      }}
+      className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+      aria-label={label}
+      poster={poster}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+    >
+      <source src={src} type="video/mp4" />
+    </video>
   );
 }
 
-function FooterCol({ title, links, className }: { title: string; links: string[]; className?: string }) {
+function FooterColumn({ title, links }: { title: string; links: string[] }) {
   return (
-    <div className={className}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#d8d0c6]/55">{title}</p>
-      <ul className="mt-4 space-y-2.5 text-sm text-[#d8d0c6]/80">
-        {links.map((l) => (
-          <li key={l}>
-            <a href="#home" className="transition hover:text-white">
-              {l}
+    <div className="lg:col-span-2">
+      <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#e2c895]">{title}</p>
+      <ul className="mt-4 space-y-2.5 text-sm text-[#d8cdbd]">
+        {links.map((link) => (
+          <li key={link}>
+            <a href="#categories" className="transition hover:text-white">
+              {link}
             </a>
           </li>
         ))}
       </ul>
     </div>
+  );
+}
+
+function ProductCard({
+  product,
+  dark = false,
+  onQuickView,
+}: {
+  product: Product;
+  dark?: boolean;
+  onQuickView: () => void;
+}) {
+  return (
+    <article
+      className={`group grid overflow-hidden rounded-lg border md:grid-cols-[0.9fr_1.1fr] ${
+        dark ? "border-white/12 bg-white/[0.06]" : "border-[#dfd4c6] bg-white"
+      }`}
+    >
+      <div className="relative min-h-72 overflow-hidden bg-[#e8ded0]">
+        <Image
+          src={img(product.imageId, 1000)}
+          alt={product.name}
+          fill
+          className="object-cover transition duration-700 group-hover:scale-[1.04]"
+          sizes="(max-width: 768px) 100vw, 360px"
+        />
+        {product.badge ? (
+          <span className="absolute left-4 top-4 rounded-full bg-[#fffaf3] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-[#25211d]">
+            {product.badge}
+          </span>
+        ) : null}
+      </div>
+      <div className="flex min-h-72 flex-col p-6">
+        <p className={`text-[10px] font-bold uppercase tracking-[0.22em] ${dark ? "text-[#e2c895]" : "text-[#8f6530]"}`}>
+          {product.category}
+        </p>
+        <h3 className="mt-3 font-serif text-3xl font-medium leading-tight">{product.name}</h3>
+        <p className={`mt-3 text-sm leading-6 ${dark ? "text-[#e8ded0]" : "text-[#6a6258]"}`}>{product.detail}</p>
+        <div className="mt-5">
+          <Rating value={product.rating} count={product.reviews} />
+        </div>
+        <div className="mt-5 flex items-baseline gap-3">
+          <span className="text-2xl font-bold">{rupee(product.price)}</span>
+          {product.compareAt ? (
+            <span className={`text-sm line-through ${dark ? "text-[#c7bba9]" : "text-[#9b8d7c]"}`}>{rupee(product.compareAt)}</span>
+          ) : null}
+        </div>
+        <p className={`mt-1 text-sm ${dark ? "text-[#c7bba9]" : "text-[#6a6258]"}`}>{product.tone}</p>
+        <div className="mt-auto flex gap-3 pt-6">
+          <button
+            type="button"
+            onClick={onQuickView}
+            className={`inline-flex min-h-11 items-center justify-center rounded-full border px-5 text-[10px] font-bold uppercase tracking-[0.18em] transition ${
+              dark ? "border-white/25 text-white hover:bg-white/10" : "border-[#dfd4c6] text-[#25211d] hover:bg-[#eee6dc]"
+            }`}
+          >
+            View details
+          </button>
+        </div>
+      </div>
+    </article>
   );
 }
