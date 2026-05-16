@@ -567,7 +567,7 @@ export default function Home() {
       </header>
 
       <main id="home">
-        <section className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#201c18]">
+        <section id="landing" className="relative isolate min-h-[calc(100svh-4rem)] overflow-hidden bg-[#201c18]">
           <Image
             src={img(P.hero, 2200)}
             alt="Layered luxury bedding in a warm bedroom"
