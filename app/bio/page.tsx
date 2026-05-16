@@ -58,7 +58,7 @@ export default function BioPage() {
 
       <div className="relative z-10 mx-auto flex max-w-[29rem] flex-col items-center text-center">
         <Link
-          href="/#landing"
+          href="/landing#landing"
           className="grid size-24 place-items-center rounded-full bg-[#252b45] font-serif text-4xl font-semibold tracking-[-0.08em] text-[#f4eadb] shadow-[0_18px_60px_rgba(37,33,29,0.22)] sm:size-28"
           aria-label="Gloria Beddings main landing"
         >
@@ -76,7 +76,7 @@ export default function BioPage() {
           ].map(({ label, mark }) => (
             <Link
               key={label}
-              href="/#landing"
+              href="/landing#landing"
               className="grid size-6 place-items-center rounded-full border border-white/35 text-[10px] font-bold uppercase transition hover:scale-110 hover:bg-white/15 hover:text-white"
               aria-label={label}
             >
@@ -86,11 +86,11 @@ export default function BioPage() {
         </div>
 
         <p className="mt-6 text-base font-bold leading-snug">Softness Beyond Your Wildest Dreams</p>
-        <Link href="/#landing" className="mt-1 text-sm font-semibold leading-snug transition hover:underline">
+        <Link href="/landing#landing" className="mt-1 text-sm font-semibold leading-snug transition hover:underline">
           Enter the Gloria home collection
         </Link>
 
-        <Link href="/#landing" className="group mt-5 block w-full overflow-hidden rounded-2xl shadow-[0_24px_80px_rgba(37,33,29,0.24)]">
+        <Link href="/landing#landing" className="group mt-5 block w-full overflow-hidden rounded-2xl shadow-[0_24px_80px_rgba(37,33,29,0.24)]">
           <span className="relative block aspect-square bg-[#e8ded0]">
             <Image
               src={img(P.hero, 1200)}
@@ -106,7 +106,7 @@ export default function BioPage() {
           {bioFeatureLinks.map(([title, detail]) => (
             <Link
               key={title}
-              href="/#landing"
+              href="/landing#landing"
               className="rounded-full border border-white/95 bg-white/5 px-5 py-3 text-center shadow-sm backdrop-blur-sm transition hover:bg-white/15"
             >
               <span className="block font-serif text-base font-semibold leading-tight">{title}</span>
@@ -121,7 +121,7 @@ export default function BioPage() {
             {categories.map((category) => (
               <Link
                 key={category.key}
-                href="/#categories"
+                href="/landing#categories"
                 className="group relative h-56 w-[82%] shrink-0 overflow-hidden rounded-2xl bg-[#25211d] sm:w-80"
               >
                 <Image
@@ -144,7 +144,7 @@ export default function BioPage() {
           {bioResourceLinks.map((link) => (
             <Link
               key={link.title}
-              href="/#landing"
+              href="/landing#landing"
               className="flex min-h-14 items-center gap-3 rounded-full border border-white/95 bg-white/5 px-3 py-2 text-left backdrop-blur-sm transition hover:bg-white/15"
             >
               <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-white/20">
@@ -159,7 +159,7 @@ export default function BioPage() {
           ))}
         </div>
 
-        <Link href="/#landing" className="group mt-8 block w-full overflow-hidden rounded-2xl bg-[#25211d] shadow-[0_24px_80px_rgba(37,33,29,0.24)]">
+        <Link href="/landing#landing" className="group mt-8 block w-full overflow-hidden rounded-2xl bg-[#25211d] shadow-[0_24px_80px_rgba(37,33,29,0.24)]">
           <span className="relative block aspect-video">
             <Image
               src={img(P.neutral, 1000)}
